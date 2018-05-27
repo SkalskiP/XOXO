@@ -1,0 +1,15 @@
+.GameBoard {
+    width: 100%;
+    height: 100%;
+
+    background-color: red;
+
+    box-sizing: border-box;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
