@@ -26,7 +26,7 @@ export class GameBoard extends React.Component {
     protected initGameBoard():void {
         const gameBoardRect = this.gameBoard.getBoundingClientRect();
         const calculatedBoardSize = BoardUtil.calculateBoardSize(
-            {width: 0.95 * gameBoardRect.width, height: 0.95 * gameBoardRect.height},
+            {width: gameBoardRect.width, height: gameBoardRect.height},
             this.boardSizeCells, this.cellSizePx);
 
         this.boardWrapper.style.width = calculatedBoardSize.width + "px";

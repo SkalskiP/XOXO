@@ -4,8 +4,7 @@ import { ISize } from '../interfaces/ISize';
 interface Props {
     size:ISize,
     image:string,
-    imageAlt:string,
-    href:string
+    imageAlt:string
 }
 
 export const ImageButton = (props:Props) => {
@@ -23,9 +22,7 @@ export const ImageButton = (props:Props) => {
     
     return(
         <div className="ImageButton" style={buttonStyle}>
-            <a href={props.href} style={imageStyle}>
-                <img alt={props.imageAlt} src={props.image} style={imageStyle}/>
-            </a>
+            <img alt={props.imageAlt} src={props.image} style={imageStyle}/>
         </div>
     );
 }
