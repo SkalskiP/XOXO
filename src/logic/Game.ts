@@ -1,7 +1,6 @@
-import { Player } from "./Player";
-import { Point } from './geometry/Point';
 import { ISize } from '../interfaces/ISize';
 import { IPoint } from "../interfaces/IPoint";
+import { Player } from '../utils/Player';
 
 export class Game {
     public activePlayer:Player;
@@ -23,8 +22,6 @@ export class Game {
         if(this.isPositionOccupied(position))
             return false;
         this.boardState[position.y][position.x] = this.activePlayer;
-        this.swichactivePlayer();
-        console.log(this.boardState);
         return true;
     }
 

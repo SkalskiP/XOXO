@@ -8,5 +8,5 @@ export class AppSettings {
 
     // BOARD
     public static boardCellSizePx:Size = new Size(50, 50);
-    public static boardSizeCells:Size = new Size(8, 8);
+    public static boardSizeCells:Size = new Size(100, 100);
 }

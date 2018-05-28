@@ -28,6 +28,14 @@ export class Rect implements IRect {
         return this;
     }
 
+    public inflateByVector(vector:IPoint) {
+        this.x = this.x - vector.x / 2;
+        this.y = this.y - vector.y / 2;
+        this.width = this.width + vector.x;
+        this.height = this.height + vector.y;
+        return this;
+    }
+
     public toString() {
         return("{x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "}");
     }

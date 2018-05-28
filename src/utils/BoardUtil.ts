@@ -1,9 +1,12 @@
 import { ISize } from '../interfaces/ISize';
 import { CanvasUtil } from './CanvasUtil';
+import { Point } from './geometry/Point';
+import { Rect } from './geometry/Rect';
+import { IPoint } from '../interfaces/IPoint';
 
 export class BoardUtil {
 
-    public static calculateBoardSize(maxBoardSizePx:ISize, maxBoardSizeCells:ISize, cellSizePx:ISize):ISize {
+    public static calculateDisplayBoardSizePx(maxBoardSizePx:ISize, maxBoardSizeCells:ISize, cellSizePx:ISize):ISize {
         let numberOfHorizontalCells = Math.min(
             Math.floor(maxBoardSizePx.width / cellSizePx.width), 
             maxBoardSizeCells.width
@@ -30,5 +33,17 @@ export class BoardUtil {
         for(let j = 1; j < boardWidthCells; j++) {
             CanvasUtil.drawLine(canvas, {x: cellSizePx.width * j, y: 0}, {x: cellSizePx.width * j, y: canvas.height});
         }
+    }
+
+    public static initGridAnchor(fullBoardSizeCells:ISize, displayBoardSizeCells:ISize):Point {
+        let horizontalExcess = fullBoardSizeCells.width - displayBoardSizeCells.width;
+        let verticalExcess = fullBoardSizeCells.height - displayBoardSizeCells.height;
+        return new Point(Math.floor(horizontalExcess/2), Math.floor(verticalExcess/2));
+    }
+
+    public static calculateCellRect(positionOnBoard:IPoint, cellSizePx:ISize, anchorPoint:IPoint):Rect {
+        let left = (positionOnBoard.x - anchorPoint.x) * cellSizePx.width;
+        let top = (positionOnBoard.y - anchorPoint.y) * cellSizePx.height;
+        return new Rect(left, top, cellSizePx.width, cellSizePx.height);
     }
 }
