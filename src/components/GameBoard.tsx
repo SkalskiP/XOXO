@@ -8,8 +8,16 @@ import { Player } from '../utils/Player';
 import { IPoint } from '../interfaces/IPoint';
 import { Game } from '../logic/Game';
 import { Rect } from '../utils/geometry/Rect';
+import { ApplicationState } from '../store/index';
+import { Dispatch, connect } from 'react-redux';
+import { updateBoardAnchorPoint } from '../store/game/actions';
 
-export class GameBoard extends React.Component {
+interface Props {
+    boardAnchorPoint:Point;
+    onNewBoardAnchor: (newBoardAnchorPoint:Point) => any;
+}
+
+export class GameBoardComponent extends React.Component<Props, {}> {
 
     protected gameBoard:HTMLDivElement;
     protected boardWrapper:HTMLDivElement;
@@ -19,7 +27,6 @@ export class GameBoard extends React.Component {
     protected cellSizePx:Size = AppSettings.boardCellSizePx;
     protected fullBoardSizeCells:Size = AppSettings.boardSizeCells;
     protected displayBoardSizeCells:Size;
-    protected anchorPoint:Point;
     protected game:Game;
 
     public componentDidMount() {
@@ -30,6 +37,11 @@ export class GameBoard extends React.Component {
 
     public componentWillUnmount() {
         window.removeEventListener("resize", this.fitGameBoardOnRezise);
+    }
+
+    public componentDidUpdate() {
+        CanvasUtil.clearCanvas(this.activeBoard);
+        this.redrawBoard();
     }
 
     protected initGameBoard():void {
@@ -47,20 +59,33 @@ export class GameBoard extends React.Component {
         CanvasUtil.applySizeToCanvas(this.activeBoard, calculatedBoardSizePx);
         CanvasUtil.applySizeToCanvas(this.passiveBoard, calculatedBoardSizePx);
         BoardUtil.initGrid(this.passiveBoard, this.cellSizePx);
-        this.anchorPoint = BoardUtil.initGridAnchor(this.fullBoardSizeCells, this.displayBoardSizeCells);
+        this.props.onNewBoardAnchor(BoardUtil.initGridAnchor(this.fullBoardSizeCells, this.displayBoardSizeCells));
     }
 
     protected updateBoard = (event):void => {
         const positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
         let isMoveValid:boolean = this.game.makeMove(positionOnBoard);
         if (isMoveValid) {
-            let activeCellRect:Rect = BoardUtil.calculateCellRect(positionOnBoard, this.cellSizePx, this.anchorPoint);
+            let activeCellRect:Rect = BoardUtil.calculateCellRect(positionOnBoard, this.cellSizePx, this.props.boardAnchorPoint);
             if(this.game.activePlayer === Player.O)
                 CanvasUtil.drawO(this.activeBoard, activeCellRect);
             else if(this.game.activePlayer === Player.X)
                 CanvasUtil.drawX(this.activeBoard, activeCellRect);
             this.game.swichactivePlayer();
         }
+    }
+
+    protected redrawBoard = ():void => {
+        this.game.boardState.forEach((column:Player[], columnIndex) => {
+            column.forEach((cell:Player, rowIndex) => {
+                let cellRect:Rect = BoardUtil.calculateCellRect({x: rowIndex, y: columnIndex}, this.cellSizePx, this.props.boardAnchorPoint);
+                if(cell === Player.O) {
+                    CanvasUtil.drawO(this.activeBoard, cellRect);
+                }
+                else if(cell === Player.X)
+                    CanvasUtil.drawX(this.activeBoard, cellRect);
+            });
+        })
     }
 
     protected fitGameBoardOnRezise = ():void => {
@@ -72,8 +97,8 @@ export class GameBoard extends React.Component {
         let positionX = mousePosition.x - boardRect.left;
         let positionY = mousePosition.y - boardRect.top;
         return {
-            x: Math.floor(positionX/this.cellSizePx.width) + this.anchorPoint.x,
-            y: Math.floor(positionY/this.cellSizePx.height) + this.anchorPoint.y
+            x: Math.floor(positionX/this.cellSizePx.width) + this.props.boardAnchorPoint.x,
+            y: Math.floor(positionY/this.cellSizePx.height) + this.props.boardAnchorPoint.y
         }
     }
 
@@ -88,3 +113,16 @@ export class GameBoard extends React.Component {
         );
     }
 }
+
+const mapStateToProps = (state: ApplicationState) => ({
+    boardAnchorPoint: state.game.boardAnchorPoint
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
+    onNewBoardAnchor: (newBoardAnchorPoint:Point) => dispatch(updateBoardAnchorPoint(newBoardAnchorPoint))
+});
+
+export const GameBoard = connect(mapStateToProps, mapDispatchToProps)(
+    GameBoardComponent
+);
+

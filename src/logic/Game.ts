@@ -4,7 +4,7 @@ import { Player } from '../utils/Player';
 
 export class Game {
     public activePlayer:Player;
-    public boardState:number[][];
+    public boardState:Player[][];
 
     constructor(boadSize:ISize) {
         this.initGameState(boadSize);

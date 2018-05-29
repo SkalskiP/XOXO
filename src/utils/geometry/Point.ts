@@ -9,4 +9,8 @@ export class Point implements IPoint {
         this.x = x;
         this.y = y;
     }
+
+    public toString() {
+        return("{x: " + this.x + ", y: " + this.y + "}");
+    }
 }
