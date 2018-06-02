@@ -36,6 +36,20 @@ export class Rect implements IRect {
         return this;
     }
 
+    public getCommonWithRect(rect:IRect):IRect {
+        let left = Math.max(this.x, rect.x);
+        let right = Math.min(this.x + this.width, rect.x + rect.width)
+        let top = Math.max(this.y, rect.y);
+        let bottom = Math.min(this.y + this.height, rect.y + rect.height)
+
+        return {
+            x: left,
+            y: top,
+            width: right - left,
+            height: bottom - top
+        }
+    }
+
     public toString() {
         return("{x: " + this.x + ", y: " + this.y + ", width: " + this.width + ", height: " + this.height + "}");
     }

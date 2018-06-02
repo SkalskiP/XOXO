@@ -7,6 +7,6 @@ export class AppSettings {
     public static twitterUrl:string = 'https://twitter.com/PiotrSkalski92';
 
     // BOARD
-    public static boardCellSizePx:Size = new Size(50, 50);
-    public static boardSizeCells:Size = new Size(100, 100);
+    public static boardCellSizePx:Size = new Size(40, 40);
+    public static boardSizeCells:Size = new Size(15, 10); // (width, height)
 }

@@ -9,7 +9,8 @@
     "react-dom": "^16.4.0",
     "react-redux": "^5.0.7",
     "react-scripts-ts": "2.16.0",
-    "redux": "^4.0.0"
+    "redux": "^4.0.0",
+    "underscore": "^1.9.1"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/index.scss src/index.css",
