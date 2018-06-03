@@ -2,7 +2,9 @@ import { ActionCreator } from 'redux';
 import {
     SelectGameModeAction,
     UpdateBoardAnchorPointAction,
-    SetActivePlayerAction
+    SetActivePlayerAction,
+    UpdateGameEvaluationAction,
+    SetPlayersNamesAction
 } from './types';
 import { GameMode } from '../../utils/GameMode';
 import { Point } from '../../utils/geometry/Point';
@@ -26,5 +28,20 @@ export const setActivePlayer: ActionCreator<SetActivePlayerAction> = (newActiveP
     type: '@@game/SET_ACTIVE_PLAYER',
     payload: {
         activePlayer: newActivePlayer
+    }
+});
+
+export const updateGameEvaluation: ActionCreator<UpdateGameEvaluationAction> = (gameEvaluation: boolean) => ({
+    type: '@@game/UPDATE_GAME_EVALUATION',
+    payload: {
+        isGameOver: gameEvaluation
+    }
+});
+
+export const setPlayersNames: ActionCreator<SetPlayersNamesAction> = (playerX: string, playerO: string) => ({
+    type: '@@game/SET_PLAYERS_NAMES',
+    payload: {
+        playerOName: playerO,
+        playerXName: playerX
     }
 });

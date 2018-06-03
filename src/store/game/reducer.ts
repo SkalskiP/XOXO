@@ -7,14 +7,7 @@ import {
 import { GameMode } from '../../utils/GameMode';
 import { Player } from '../../utils/Player';
 
-// export const initialState: GameState = {
-//     gameMode: GameMode.PLAYER_VS_PLAYER,
-//     boardAnchorPoint: null,
-//     activePlayer: Player.O
-// };
-
 export const gameReducer: Reducer<GameState> = (
-//   state: GameState = initialState,
   state: GameState = null,
   action: GameActions
 ) => {
@@ -34,6 +27,18 @@ export const gameReducer: Reducer<GameState> = (
       return {
         ...state,
         activePlayer: action.payload.activePlayer
+      };
+    case '@@game/UPDATE_GAME_EVALUATION':
+      console.log(action.payload.isGameOver)
+      return {
+        ...state,
+        isGameOver: action.payload.isGameOver
+      };
+    case '@@game/SET_PLAYERS_NAMES':
+      return {
+        ...state,
+        playerOName: action.payload.playerOName,
+        playerXName: action.payload.playerXName
       };
     default:
       return state;

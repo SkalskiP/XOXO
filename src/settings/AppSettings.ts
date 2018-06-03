@@ -8,5 +8,9 @@ export class AppSettings {
 
     // BOARD
     public static boardCellSizePx:Size = new Size(40, 40);
-    public static boardSizeCells:Size = new Size(10, 10); // (width, height)
+    public static boardSizeCells:Size = new Size(20, 20); // (width, height)
+
+    // VIEW
+    public static activePlayerHex:string = "#14bdac";
+    public static inactivePalyerHex:string = "#dcdcdc";
 }

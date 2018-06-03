@@ -1,10 +1,4 @@
-.BoardView {
-    width: 100%;
-    height: 100%;
-
-    background-color: transparent;
-
-    box-sizing: border-box;
+.PlayerBox {
     user-select: none;
     display: flex;
     flex-direction: column;
@@ -12,24 +6,26 @@
     justify-content: space-around;
     align-content: space-around;
     align-items: center;
+    margin: 0 10px;
+    // background-color: rgba(0, 0, 0, 0.01);
 
-    background-image: url("./assets/background.svg");
-
-    .MiddleRow {
+    .NameBox {
         width: 100%;
-        height: 100%;
 
-        background-color: transparent;
-
-        box-sizing: border-box;
         user-select: none;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         flex-wrap: nowrap;
         justify-content: space-around;
         align-content: space-around;
         align-items: center;
 
-        overflow: hidden;
+        font-size: 20px;
+        font-weight: normal;
+    }
+
+    .ActivityIndicator {
+        width: 100%;
+        height: 2px;
     }
 }

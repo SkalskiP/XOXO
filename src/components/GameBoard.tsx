@@ -10,7 +10,8 @@ import { Rect } from '../utils/geometry/Rect';
 import { ApplicationState } from '../store/index';
 import { Dispatch, connect } from 'react-redux';
 import { updateBoardAnchorPoint,
-         setActivePlayer } from '../store/game/actions';
+         setActivePlayer,
+         updateGameEvaluation } from '../store/game/actions';
 import { ISize } from '../interfaces/ISize';
 import { GameUtil } from '../logic/GameUtil';
 
@@ -25,6 +26,7 @@ interface Props {
     boardAnchorPoint:Point;
     onNewActivePlayer: (newActivePlayer:Player) => any;
     onNewBoardAnchor: (newBoardAnchorPoint:Point) => any;
+    onNewGameEvaluation: (newGameEvaluation:boolean) => any;
 }
 
 export class GameBoardComponent extends React.Component<Props, {}> {
@@ -92,10 +94,11 @@ export class GameBoardComponent extends React.Component<Props, {}> {
                 CanvasUtil.drawO(this.activeBoard, activeCellRect);
             else if(this.props.activePlayer === Player.X)
                 CanvasUtil.drawX(this.activeBoard, activeCellRect);
+            this.props.onNewGameEvaluation(
+                GameUtil.isWin(positionOnBoard, this.boardState, this.props.activePlayer)
+            )
             this.swichactivePlayer();
         }
-        // let possibleMoves = GameUtil.getPossibleMoves(this.boardState, 1);
-        // console.log(possibleMoves.length);
     }
 
     protected redrawBoard = ():void => {
@@ -151,7 +154,8 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
     onNewBoardAnchor: (newBoardAnchorPoint:Point) => dispatch(updateBoardAnchorPoint(newBoardAnchorPoint)),
-    onNewActivePlayer: (newActivePlayer:Player) => dispatch(setActivePlayer(newActivePlayer))
+    onNewActivePlayer: (newActivePlayer:Player) => dispatch(setActivePlayer(newActivePlayer)),
+    onNewGameEvaluation: (newGameEvaluation:boolean) => dispatch(updateGameEvaluation(newGameEvaluation))
 });
 
 export const GameBoard = connect(mapStateToProps, mapDispatchToProps)(

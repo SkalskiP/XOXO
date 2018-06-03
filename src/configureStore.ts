@@ -9,7 +9,10 @@ const initialApplicationState: ApplicationState = {
     game: {
         gameMode: GameMode.PLAYER_VS_PLAYER,
         boardAnchorPoint: null,
-        activePlayer: Player.O
+        activePlayer: Player.O,
+        isGameOver: false,
+        playerOName: "Player 1",
+        playerXName: "Player 2"
     }
 };
 
