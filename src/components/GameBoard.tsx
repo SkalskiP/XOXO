@@ -6,14 +6,24 @@ import { CanvasUtil } from '../utils/CanvasUtil';
 import { Point } from '../utils/geometry/Point';
 import { Player } from '../utils/Player';
 import { IPoint } from '../interfaces/IPoint';
-import { Game } from '../logic/Game';
 import { Rect } from '../utils/geometry/Rect';
 import { ApplicationState } from '../store/index';
 import { Dispatch, connect } from 'react-redux';
-import { updateBoardAnchorPoint } from '../store/game/actions';
+import { updateBoardAnchorPoint,
+         setActivePlayer } from '../store/game/actions';
+import { ISize } from '../interfaces/ISize';
+import { GameUtil } from '../logic/GameUtil';
+
+// https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
+// https://github.com/javierchavez/Gomoku/blob/master/Gomoku.java
+// https://4programmers.net/Forum/Java/221325-wprowadzenie_algorytmu_minimax_do_gomoku
+// https://paper.dropbox.com/doc/Program-Teoria-Gier-FxCZ4kxNLtdbrKZtqmO5C
+// http://gomokuworld.com/gomoku/1
 
 interface Props {
+    activePlayer:Player;
     boardAnchorPoint:Point;
+    onNewActivePlayer: (newActivePlayer:Player) => any;
     onNewBoardAnchor: (newBoardAnchorPoint:Point) => any;
 }
 
@@ -26,11 +36,12 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 
     protected cellSizePx:Size = AppSettings.boardCellSizePx;
     protected fullBoardSizeCells:Size = AppSettings.boardSizeCells;
+    protected boardState:Player[][];
     protected displayBoardSizeCells:Size;
-    protected game:Game;
+
 
     public componentDidMount() {
-        this.game = new Game(this.fullBoardSizeCells);
+        this.initGameBoardState(this.fullBoardSizeCells);
         this.initGameBoard();
         window.addEventListener("resize", this.fitGameBoardOnRezise);
     }
@@ -42,6 +53,13 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     public componentDidUpdate() {
         CanvasUtil.clearCanvas(this.activeBoard);
         this.redrawBoard();
+    }
+
+    protected initGameBoardState(boardSize:ISize) {
+        this.boardState = [];
+        for(let i = 0; i < boardSize.width; i++) {
+            this.boardState.push(new Array(boardSize.height).fill(0));
+        }
     }
 
     protected initGameBoard():void {
@@ -64,20 +82,23 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 
     protected updateBoard = (event):void => {
         const positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
-        let isMoveValid:boolean = this.game.makeMove(positionOnBoard);
-        if (isMoveValid) {
+
+        if(this.boardState[positionOnBoard.x][positionOnBoard.y] === Player.NONE) {
+            this.boardState[positionOnBoard.x][positionOnBoard.y] = this.props.activePlayer;
+
             let activeCellRect:Rect = BoardUtil.calculateCellRect(positionOnBoard, this.cellSizePx, this.props.boardAnchorPoint);
-            if(this.game.activePlayer === Player.O)
+
+            if(this.props.activePlayer === Player.O)
                 CanvasUtil.drawO(this.activeBoard, activeCellRect);
-            else if(this.game.activePlayer === Player.X)
+            else if(this.props.activePlayer === Player.X)
                 CanvasUtil.drawX(this.activeBoard, activeCellRect);
-            this.game.swichactivePlayer();
+            this.swichactivePlayer();
         }
     }
 
     protected redrawBoard = ():void => {
-        this.game.boardState.forEach((column:Player[], columnIndex) => {
-            column.forEach((cell:Player, rowIndex) => {
+        this.boardState.forEach((row:Player[], rowIndex) => {
+            row.forEach((cell:Player, columnIndex) => {
                 let cellRect:Rect = BoardUtil.calculateCellRect({x: rowIndex, y: columnIndex}, this.cellSizePx, this.props.boardAnchorPoint);
                 if(cell === Player.O) {
                     CanvasUtil.drawO(this.activeBoard, cellRect);
@@ -102,6 +123,13 @@ export class GameBoardComponent extends React.Component<Props, {}> {
         }
     }
 
+    protected swichactivePlayer() {
+        if(this.props.activePlayer === Player.X)
+            this.props.onNewActivePlayer(Player.O);
+        else
+            this.props.onNewActivePlayer(Player.X);
+    }
+
     public render() {
         return (
             <div className={"GameBoard"} ref = {ref => this.gameBoard = ref}>
@@ -115,11 +143,13 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
-    boardAnchorPoint: state.game.boardAnchorPoint
+    boardAnchorPoint: state.game.boardAnchorPoint,
+    activePlayer: state.game.activePlayer
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
-    onNewBoardAnchor: (newBoardAnchorPoint:Point) => dispatch(updateBoardAnchorPoint(newBoardAnchorPoint))
+    onNewBoardAnchor: (newBoardAnchorPoint:Point) => dispatch(updateBoardAnchorPoint(newBoardAnchorPoint)),
+    onNewActivePlayer: (newActivePlayer:Player) => dispatch(setActivePlayer(newActivePlayer))
 });
 
 export const GameBoard = connect(mapStateToProps, mapDispatchToProps)(
