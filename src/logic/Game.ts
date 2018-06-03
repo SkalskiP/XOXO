@@ -60,8 +60,17 @@ export class Game {
             return GameUtil.getDefaultMove(boardState);
         }
 
+        // Player to maximize
+        let currentPlayer = isMaximizingPlayer ? Player.O : Player.X;
+
         let moves:IMinMaxMove[] = possibleMoves.map((move:Point) => {
-            return this.minMax(boardState, move, depth - 1, isMaximizingPlayer, padding);
+            boardState[move.x][move.y] = currentPlayer;
+            let moveEvaluation:number = this.minMax(boardState, move, depth - 1, isMaximizingPlayer, padding);
+            boardState[move.x][move.y] = Player.NONE;
+            return {
+                position: move,
+                value: moveEvaluation
+            };
         })
 
         _.sortBy(moves, 'value');
@@ -73,37 +82,45 @@ export class Game {
 
     }
 
-    public minMax(boardState:Player[][], nextMove:Point, depth:number, isMaximizingPlayer:boolean, padding:number = 1):IMinMaxMove {
+    public minMax(boardState:Player[][], currentMove:Point, depth:number, isMaximizingPlayer:boolean, padding:number = 1):number {
         // Player to maximize
         let currentPlayer = isMaximizingPlayer ? Player.O : Player.X;
         
-        // Adding move to board
-        boardState[nextMove.x][nextMove.y] = currentPlayer;
-
         // Evaluate if this move is game winning
-        let isWon = GameUtil.isWin(nextMove, boardState, currentPlayer);
-  
-        let possibleMoves = GameUtil.getPossibleMoves(boardState, padding);
-        // Recurrence
-        let moves:IMinMaxMove[] = possibleMoves.map((move:Point) => {
-            return this.minMax(boardState, move, depth - 1, !isMaximizingPlayer, padding);
-        })
+        let isWon = GameUtil.isWin(currentMove, boardState, currentPlayer);
 
-        // Remove move from board
-        boardState[nextMove.x][nextMove.y] = Player.NONE;
-
+        // Value of currentPlayer for maximized player is 1 and for other one is -1
         if(isWon) {
-            return {
-                position: nextMove,
-                value: currentPlayer * 100
-            }
+            return currentPlayer * 100;
         }  
         else if(depth === 0) {
-            return {
-                position: nextMove,
-                value: 0
-            }
+            return 0;
         }
+        else {
+            // Looking for possible moves
+            let possibleMoves = GameUtil.getPossibleMoves(boardState, padding);
+            // Player to make next move
+            let nextPlayer = !isMaximizingPlayer ? Player.O : Player.X;
+            // Recurrence
+            let moves:IMinMaxMove[] = possibleMoves.map((move:Point) => {
+                // Adding move to board
+                boardState[move.x][move.y] = nextPlayer;
+                // Evaluationg next move
+                let moveEvaluation:number = this.minMax(boardState, move, depth - 1, !isMaximizingPlayer, padding);
+                // Remove move from board
+                boardState[currentMove.x][currentMove.y] = Player.NONE;
+                return {
+                    position: move,
+                    value: moveEvaluation
+                };
+            });
 
+            _.sortBy(moves, 'value');
+
+            if(isMaximizingPlayer)
+                return moves[0].value;
+            else
+                return moves[moves.length - 1].value
+        }
     }
 }
