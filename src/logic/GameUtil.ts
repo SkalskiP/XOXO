@@ -93,7 +93,11 @@ export class GameUtil {
     }
 
     public static getNextMove(boardState:Player[][], depth:number, isMaximizingPlayer:boolean, padding:number = 1):Point {
+        console.log("GET NEXT MOVE")
+        console.log(boardState);
         let possibleMoves = GameUtil.getPossibleMoves(boardState, padding);
+        // console.log(possibleMoves);
+        console.log(boardState);
 
         // Board is empty, bot place his pawn in the middle
         if(possibleMoves.length === 0) {
@@ -113,12 +117,14 @@ export class GameUtil {
             };
         })
 
+        console.log(moves);
+
         _.sortBy(moves, 'value');
 
         if(isMaximizingPlayer)
             return moves[0].position;
         else
-            return moves[moves.length - 1].position
+            return moves.slice(-1)[0].position
 
     }
 

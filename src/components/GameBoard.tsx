@@ -81,8 +81,8 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     }
 
     protected updateBoard = (event):void => {
-        const positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
-
+        let positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
+        
         if(this.boardState[positionOnBoard.x][positionOnBoard.y] === Player.NONE) {
             this.boardState[positionOnBoard.x][positionOnBoard.y] = this.props.activePlayer;
 
@@ -94,6 +94,8 @@ export class GameBoardComponent extends React.Component<Props, {}> {
                 CanvasUtil.drawX(this.activeBoard, activeCellRect);
             this.swichactivePlayer();
         }
+        // let possibleMoves = GameUtil.getPossibleMoves(this.boardState, 1);
+        // console.log(possibleMoves.length);
     }
 
     protected redrawBoard = ():void => {
