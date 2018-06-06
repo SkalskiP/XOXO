@@ -11,8 +11,8 @@ const initialApplicationState: ApplicationState = {
         boardAnchorPoint: null,
         activePlayer: Player.O,
         isGameOver: false,
-        playerOName: "Player 1",
-        playerXName: "Player 2"
+        playerOName: "Kółko",
+        playerXName: "Krzyżyk"
     }
 };
 

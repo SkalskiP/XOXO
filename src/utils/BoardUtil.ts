@@ -3,8 +3,17 @@ import { CanvasUtil } from './CanvasUtil';
 import { Point } from './geometry/Point';
 import { Rect } from './geometry/Rect';
 import { IPoint } from '../interfaces/IPoint';
+import { Player } from './Player';
 
 export class BoardUtil {
+
+    public static initGameBoardState(boardSize:ISize):Player[][] {
+        let boardState:Player[][] = [];
+        for(let i = 0; i < boardSize.width; i++) {
+            boardState.push(new Array(boardSize.height).fill(0));
+        }
+        return boardState;
+    }
 
     public static calculateDisplayBoardSizePx(maxBoardSizePx:ISize, maxBoardSizeCells:ISize, cellSizePx:ISize):ISize {
         let numberOfHorizontalCells = Math.min(

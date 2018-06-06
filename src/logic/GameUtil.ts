@@ -6,8 +6,20 @@ import { Size } from '../utils/geometry/Size';
 import { Rect } from '../utils/geometry/Rect';
 import { IMinMaxMove } from '../interfaces/IMinMaxMove';
 import _ from 'underscore'
+import { ISize } from '../interfaces/ISize';
+import { BoardUtil } from '../utils/BoardUtil';
 
 export class GameUtil {
+
+    public static makeMove(boardState:Player[][], activePlayer:Player, move:IPoint):boolean {
+        if(boardState[move.x][move.y] === Player.NONE) {
+            boardState[move.x][move.y] = activePlayer;
+            return true;
+        }
+        return false;
+
+    }
+
     public static isWin(lastMove:Point, boardState:Player[][], activePlayer:Player):boolean {
         let lenOfWinningChain = 5;
 

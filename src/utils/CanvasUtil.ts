@@ -2,6 +2,8 @@ import { ISize } from '../interfaces/ISize';
 import { IPoint } from '../interfaces/IPoint';
 import { UnitUtil } from './UnitUtil';
 import { Rect } from './geometry/Rect';
+import { Player } from './Player';
+import { BoardUtil } from './BoardUtil';
 
 export class CanvasUtil {
 
@@ -40,6 +42,22 @@ export class CanvasUtil {
         ctx.beginPath();
         ctx.arc(anchorPoint.x, anchorPoint.y, radius, startAngleRad, endAngleRad, false);
         ctx.stroke();
+    }
+
+    public static drawBoardState(canvas:HTMLCanvasElement, boardState:Player[][], cellSizePx:ISize, anchorPoint:IPoint) {
+        boardState.forEach((row:Player[], rowIndex) => {
+            row.forEach((cell:Player, columnIndex) => {
+                let cellRect:Rect = BoardUtil.calculateCellRect({x: rowIndex, y: columnIndex}, cellSizePx, anchorPoint);
+                CanvasUtil.drawBoardCell(canvas, cellRect, cell);
+            });
+        });
+    }
+
+    public static drawBoardCell(canvas:HTMLCanvasElement, cellRect:Rect, player:Player) {
+        if(player === Player.O)
+            CanvasUtil.drawO(canvas, cellRect);
+        else if(player === Player.X)
+            CanvasUtil.drawX(canvas, cellRect);
     }
 
     public static drawO(canvas:HTMLCanvasElement, activeCellRect:Rect, color:string = "#000", 

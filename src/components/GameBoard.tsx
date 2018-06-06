@@ -22,7 +22,6 @@ import { GameUtil } from '../logic/GameUtil';
 // http://gomokuworld.com/gomoku/1
 
 interface Props {
-    activePlayer:Player;
     boardAnchorPoint:Point;
     onNewActivePlayer: (newActivePlayer:Player) => any;
     onNewBoardAnchor: (newBoardAnchorPoint:Point) => any;
@@ -35,21 +34,23 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     protected boardWrapper:HTMLDivElement;
     protected activeBoard:HTMLCanvasElement;
     protected passiveBoard:HTMLCanvasElement;
+    protected debugBoard:HTMLCanvasElement;
 
     protected cellSizePx:Size = AppSettings.boardCellSizePx;
     protected fullBoardSizeCells:Size = AppSettings.boardSizeCells;
+    protected activePlayer:Player = Player.O;
     protected boardState:Player[][];
     protected displayBoardSizeCells:Size;
 
 
     public componentDidMount() {
-        this.initGameBoardState(this.fullBoardSizeCells);
+        this.boardState = BoardUtil.initGameBoardState(this.fullBoardSizeCells);
         this.initGameBoard();
-        window.addEventListener("resize", this.fitGameBoardOnRezise);
+        window.addEventListener("resize", this.initGameBoard);
     }
 
     public componentWillUnmount() {
-        window.removeEventListener("resize", this.fitGameBoardOnRezise);
+        window.removeEventListener("resize", this.initGameBoard);
     }
 
     public componentDidUpdate() {
@@ -57,65 +58,19 @@ export class GameBoardComponent extends React.Component<Props, {}> {
         this.redrawBoard();
     }
 
-    protected initGameBoardState(boardSize:ISize) {
-        this.boardState = [];
-        for(let i = 0; i < boardSize.width; i++) {
-            this.boardState.push(new Array(boardSize.height).fill(0));
-        }
-    }
-
-    protected initGameBoard():void {
-        const gameBoardRect = this.gameBoard.getBoundingClientRect();
-        const calculatedBoardSizePx = BoardUtil.calculateDisplayBoardSizePx(
-            {width: gameBoardRect.width, height: gameBoardRect.height},
-            this.fullBoardSizeCells, this.cellSizePx);
-
-        this.displayBoardSizeCells = new Size(
-            calculatedBoardSizePx.width / this.cellSizePx.width,
-            calculatedBoardSizePx.height / this.cellSizePx.height)
-
-        this.boardWrapper.style.width = calculatedBoardSizePx.width + "px";
-        this.boardWrapper.style.height = calculatedBoardSizePx.height + "px";
-        CanvasUtil.applySizeToCanvas(this.activeBoard, calculatedBoardSizePx);
-        CanvasUtil.applySizeToCanvas(this.passiveBoard, calculatedBoardSizePx);
-        BoardUtil.initGrid(this.passiveBoard, this.cellSizePx);
-        this.props.onNewBoardAnchor(BoardUtil.initGridAnchor(this.fullBoardSizeCells, this.displayBoardSizeCells));
-    }
-
     protected updateBoard = (event):void => {
         let positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
-        
-        if(this.boardState[positionOnBoard.x][positionOnBoard.y] === Player.NONE) {
-            this.boardState[positionOnBoard.x][positionOnBoard.y] = this.props.activePlayer;
-
+        let doesMoveSucceeded = GameUtil.makeMove(this.boardState, this.activePlayer, positionOnBoard);
+        if (doesMoveSucceeded) {
             let activeCellRect:Rect = BoardUtil.calculateCellRect(positionOnBoard, this.cellSizePx, this.props.boardAnchorPoint);
-
-            if(this.props.activePlayer === Player.O)
-                CanvasUtil.drawO(this.activeBoard, activeCellRect);
-            else if(this.props.activePlayer === Player.X)
-                CanvasUtil.drawX(this.activeBoard, activeCellRect);
-            this.props.onNewGameEvaluation(
-                GameUtil.isWin(positionOnBoard, this.boardState, this.props.activePlayer)
-            )
+            CanvasUtil.drawBoardCell(this.activeBoard, activeCellRect, this.activePlayer);
+            this.props.onNewGameEvaluation(GameUtil.isWin(positionOnBoard, this.boardState, this.activePlayer));
             this.swichactivePlayer();
         }
     }
 
     protected redrawBoard = ():void => {
-        this.boardState.forEach((row:Player[], rowIndex) => {
-            row.forEach((cell:Player, columnIndex) => {
-                let cellRect:Rect = BoardUtil.calculateCellRect({x: rowIndex, y: columnIndex}, this.cellSizePx, this.props.boardAnchorPoint);
-                if(cell === Player.O) {
-                    CanvasUtil.drawO(this.activeBoard, cellRect);
-                }
-                else if(cell === Player.X)
-                    CanvasUtil.drawX(this.activeBoard, cellRect);
-            });
-        })
-    }
-
-    protected fitGameBoardOnRezise = ():void => {
-        this.initGameBoard();
+        CanvasUtil.drawBoardState(this.activeBoard, this.boardState, this.cellSizePx, this.props.boardAnchorPoint);
     }
 
     protected getPositionOnBoard(mousePosition:IPoint):IPoint {
@@ -129,10 +84,26 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     }
 
     protected swichactivePlayer() {
-        if(this.props.activePlayer === Player.X)
-            this.props.onNewActivePlayer(Player.O);
-        else
-            this.props.onNewActivePlayer(Player.X);
+        let newPlayer:Player = this.activePlayer === Player.X ? Player.O : Player.X;
+        this.props.onNewActivePlayer(newPlayer);
+        this.activePlayer = newPlayer;      
+    }
+
+    protected initGameBoard = ():void => {
+        const gameBoardRect = this.gameBoard.getBoundingClientRect();
+        const calculatedBoardSizePx = BoardUtil.calculateDisplayBoardSizePx(
+            {width: gameBoardRect.width, height: gameBoardRect.height},
+            this.fullBoardSizeCells, this.cellSizePx);
+        this.displayBoardSizeCells = new Size(
+            calculatedBoardSizePx.width / this.cellSizePx.width,
+            calculatedBoardSizePx.height / this.cellSizePx.height)
+        this.boardWrapper.style.width = calculatedBoardSizePx.width + "px";
+        this.boardWrapper.style.height = calculatedBoardSizePx.height + "px";
+        CanvasUtil.applySizeToCanvas(this.activeBoard, calculatedBoardSizePx);
+        CanvasUtil.applySizeToCanvas(this.passiveBoard, calculatedBoardSizePx);
+        CanvasUtil.applySizeToCanvas(this.debugBoard, calculatedBoardSizePx);
+        BoardUtil.initGrid(this.passiveBoard, this.cellSizePx);
+        this.props.onNewBoardAnchor(BoardUtil.initGridAnchor(this.fullBoardSizeCells, this.displayBoardSizeCells));
     }
 
     public render() {
@@ -141,6 +112,7 @@ export class GameBoardComponent extends React.Component<Props, {}> {
                 <div className={"BoardWrapper"} ref = {ref => this.boardWrapper = ref} onClick={this.updateBoard}>
                     <canvas className={"PassiveBoard"} ref = {ref => this.passiveBoard = ref}/>
                     <canvas className={"ActiveBoard"} ref = {ref => this.activeBoard = ref}/>
+                    <canvas className={"DebugBoard"} ref = {ref => this.debugBoard = ref}/>
                 </div>
             </div>
         );
@@ -148,8 +120,7 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
-    boardAnchorPoint: state.game.boardAnchorPoint,
-    activePlayer: state.game.activePlayer
+    boardAnchorPoint: state.game.boardAnchorPoint
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({

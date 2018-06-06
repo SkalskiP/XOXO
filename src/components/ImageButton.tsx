@@ -5,7 +5,8 @@ interface Props {
     size:ISize,
     image:string,
     imageAlt:string,
-    onClick?:any
+    onClick?:any,
+    href?:string
 }
 
 export const ImageButton = (props:Props) => {
@@ -22,8 +23,10 @@ export const ImageButton = (props:Props) => {
     }
     
     return(
-        <div className="ImageButton" style={buttonStyle} onClick={props.onClick ? props.onClick : null}>
-            <img alt={props.imageAlt} src={props.image} style={imageStyle}/>
-        </div>
+        <span className="ImageButton" style={buttonStyle} onClick={props.onClick ? props.onClick : null}>
+            <a href={props.href} style={imageStyle}>
+                <img alt={props.imageAlt} src={props.image} style={imageStyle}/>
+            </a>
+        </span>
     );
 }

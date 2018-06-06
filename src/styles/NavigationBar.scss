@@ -1,7 +1,7 @@
 .NavigationBar {
     width: 100%;
-    padding: 10px;
-    font-size: 30px;
+    padding: 5px 10px;
+    font-size: 35px;
     font-weight: bold;
 
     background-color: #212121;
@@ -15,4 +15,17 @@
     justify-content: center;
     align-content: center;
     align-items: center;
+
+    .NavigationLinks {
+        box-sizing: border-box;
+        user-select: none;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        position: absolute;
+        right: 5px;
+    }
 }
