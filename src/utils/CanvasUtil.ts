@@ -44,6 +44,14 @@ export class CanvasUtil {
         ctx.stroke();
     }
 
+    public static fillRectWithColor(canvas:HTMLCanvasElement, cellRect:Rect, color:string = "#000") { 
+        let ctx:CanvasRenderingContext2D = canvas.getContext('2d');
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.fillRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height);
+        ctx.restore();
+    }
+
     public static drawBoardState(canvas:HTMLCanvasElement, boardState:Player[][], cellSizePx:ISize, anchorPoint:IPoint) {
         boardState.forEach((row:Player[], rowIndex) => {
             row.forEach((cell:Player, columnIndex) => {

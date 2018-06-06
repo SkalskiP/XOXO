@@ -24,12 +24,13 @@ export const gameReducer: Reducer<GameState> = (
         boardAnchorPoint: action.payload.boardAnchorPoint
       };
     case '@@game/SET_ACTIVE_PLAYER':
+    console.log("Active palyer is: " + action.payload.activePlayer)
       return {
         ...state,
         activePlayer: action.payload.activePlayer
       };
     case '@@game/UPDATE_GAME_EVALUATION':
-      console.log(action.payload.isGameOver)
+      console.log("Game is over: " + action.payload.isGameOver)
       return {
         ...state,
         isGameOver: action.payload.isGameOver

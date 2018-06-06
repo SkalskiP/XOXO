@@ -55,16 +55,33 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 
     public componentDidUpdate() {
         CanvasUtil.clearCanvas(this.activeBoard);
+        CanvasUtil.clearCanvas(this.debugBoard);
         this.redrawBoard();
     }
 
-    protected updateBoard = (event):void => {
+    protected livePlayerMakesMove = (event):void => {
         let positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
-        let doesMoveSucceeded = GameUtil.makeMove(this.boardState, this.activePlayer, positionOnBoard);
+        this.makeMove(positionOnBoard);
+        this.botPlayerMakesMove();
+    }
+
+    protected botPlayerMakesMove():void {
+        CanvasUtil.clearCanvas(this.debugBoard);
+        let possibleMoves = GameUtil.getPossibleMoves(this.boardState, 1);
+        possibleMoves.forEach((move:Point) => {
+            let cellRect:Rect = BoardUtil.calculateCellRect(move, this.cellSizePx, this.props.boardAnchorPoint);
+            CanvasUtil.fillRectWithColor(this.debugBoard, cellRect, AppSettings.possibleMoveRGBA);
+        });
+        let nextMove = GameUtil.getNextMove(this.boardState, 3, this.activePlayer === AppSettings.playerToMaximize, AppSettings.minMaxPadding); 
+        this.makeMove(nextMove);
+    }
+
+    protected makeMove(move:IPoint) {
+        let doesMoveSucceeded = GameUtil.makeMove(this.boardState, this.activePlayer, move);
         if (doesMoveSucceeded) {
-            let activeCellRect:Rect = BoardUtil.calculateCellRect(positionOnBoard, this.cellSizePx, this.props.boardAnchorPoint);
+            let activeCellRect:Rect = BoardUtil.calculateCellRect(move, this.cellSizePx, this.props.boardAnchorPoint);
             CanvasUtil.drawBoardCell(this.activeBoard, activeCellRect, this.activePlayer);
-            this.props.onNewGameEvaluation(GameUtil.isWin(positionOnBoard, this.boardState, this.activePlayer));
+            this.props.onNewGameEvaluation(GameUtil.isWin(move, this.boardState, this.activePlayer));
             this.swichactivePlayer();
         }
     }
@@ -109,10 +126,10 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     public render() {
         return (
             <div className={"GameBoard"} ref = {ref => this.gameBoard = ref}>
-                <div className={"BoardWrapper"} ref = {ref => this.boardWrapper = ref} onClick={this.updateBoard}>
+                <div className={"BoardWrapper"} ref = {ref => this.boardWrapper = ref} onClick={this.livePlayerMakesMove}>
+                    <canvas className={"DebugBoard"} ref = {ref => this.debugBoard = ref}/>
                     <canvas className={"PassiveBoard"} ref = {ref => this.passiveBoard = ref}/>
                     <canvas className={"ActiveBoard"} ref = {ref => this.activeBoard = ref}/>
-                    <canvas className={"DebugBoard"} ref = {ref => this.debugBoard = ref}/>
                 </div>
             </div>
         );

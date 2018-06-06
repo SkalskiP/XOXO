@@ -8,6 +8,7 @@ import { IMinMaxMove } from '../interfaces/IMinMaxMove';
 import _ from 'underscore'
 import { ISize } from '../interfaces/ISize';
 import { BoardUtil } from '../utils/BoardUtil';
+import { UnitUtil } from '../utils/UnitUtil';
 
 export class GameUtil {
 
@@ -85,7 +86,7 @@ export class GameUtil {
                     for(let hI = possibleMoveRect.x; hI < possibleMoveRect.x + possibleMoveRect.width; hI++) {
                         for(let vI = possibleMoveRect.y; vI < possibleMoveRect.y + possibleMoveRect.height; vI++) {
                             if(boardState[hI][vI] !== Player.NONE) {
-                                moves.push(new Point(vIndex, hIndex));
+                                moves.push(new Point(hIndex, vIndex));
                                 break loop;
                             }
                         }
@@ -105,11 +106,7 @@ export class GameUtil {
     }
 
     public static getNextMove(boardState:Player[][], depth:number, isMaximizingPlayer:boolean, padding:number = 1):Point {
-        console.log("GET NEXT MOVE")
-        console.log(boardState);
         let possibleMoves = GameUtil.getPossibleMoves(boardState, padding);
-        // console.log(possibleMoves);
-        console.log(boardState);
 
         // Board is empty, bot place his pawn in the middle
         if(possibleMoves.length === 0) {
@@ -129,32 +126,31 @@ export class GameUtil {
             };
         })
 
+        moves = _.sortBy(moves, 'value');
+
+        moves.forEach((move, index) => {
+            console.log("i=" + index + ", value: " + move.value + ", point: " + move.position.toString());
+        })
+
         console.log(moves);
 
-        _.sortBy(moves, 'value');
-
-        if(isMaximizingPlayer)
-            return moves[0].position;
-        else
+        if(!isMaximizingPlayer)
             return moves.slice(-1)[0].position
+        else
+            return moves[0].position;
 
     }
 
-    public static minMax(boardState:Player[][], currentMove:Point, depth:number, isMaximizingPlayer:boolean, padding:number = 1):number {
-        // Player to maximize
-        let currentPlayer = isMaximizingPlayer ? Player.O : Player.X;
-        
-        // Evaluate if this move is game winning
-        let isWon = GameUtil.isWin(currentMove, boardState, currentPlayer);
+    public static minMax(boardState:Player[][], lastMove:Point, depth:number, isMaximizingPlayer:boolean, padding:number = 1):number {
+        if (depth > 0) {
 
-        // Value of currentPlayer for maximized player is 1 and for other one is -1
-        if(isWon) {
-            return currentPlayer * 100;
-        }  
-        else if(depth === 0) {
-            return 0;
-        }
-        else {
+            let outcome = this.evaluateCurrentBoardState(boardState, lastMove, isMaximizingPlayer);
+            if(outcome !== 0) {
+                return outcome * depth;
+            }
+
+            // Player to maximize
+            let currentPlayer = isMaximizingPlayer ? Player.O : Player.X;
             // Looking for possible moves
             let possibleMoves = GameUtil.getPossibleMoves(boardState, padding);
             // Player to make next move
@@ -166,19 +162,139 @@ export class GameUtil {
                 // Evaluationg next move
                 let moveEvaluation:number = this.minMax(boardState, move, depth - 1, !isMaximizingPlayer, padding);
                 // Remove move from board
-                boardState[currentMove.x][currentMove.y] = Player.NONE;
+                boardState[move.x][move.y] = Player.NONE;
                 return {
                     position: move,
                     value: moveEvaluation
                 };
             });
 
-            _.sortBy(moves, 'value');
+            moves = _.sortBy(moves, 'value');
 
             if(isMaximizingPlayer)
-                return moves[0].value;
-            else
                 return moves[moves.length - 1].value
+            else
+                return moves[0].value;
+
         }
+        else {
+            return this.evaluateCurrentBoardState(boardState, lastMove, isMaximizingPlayer);
+        }
+    }
+
+    public static evaluateCurrentBoardState(boardState:Player[][], lastMove:Point, isMaximizingPlayer:boolean):number {
+        let measure = 0;
+        let factor = !isMaximizingPlayer ? 1 : -1;
+        let player = isMaximizingPlayer ? Player.O : Player.X;
+        let opponent = isMaximizingPlayer ? Player.X : Player.O;
+
+        if (GameUtil.detectWin(boardState, 5, lastMove, player))
+            return factor * 60000;
+        else if (GameUtil.detectWin(boardState, 5, lastMove, opponent))
+            return factor * 100000;
+        else if (GameUtil.detectXInChain(boardState, 4, lastMove, player))
+            return factor * 6000;
+        else if (GameUtil.detectXInChain(boardState, 4, lastMove, opponent))
+            return factor * 10000;
+        else if (GameUtil.detectXInChain(boardState, 3, lastMove, player))
+            return factor * 600;
+        else if (GameUtil.detectXInChain(boardState, 3, lastMove, opponent))
+            return factor * 1000;
+
+        return measure;
+    }
+
+    public static detectXInChain(boardState:Player[][], X:number, lastMove:Point, player:Player):boolean {
+        let currentLastMove = boardState[lastMove.x][lastMove.y];
+        boardState[lastMove.x][lastMove.y] = player;
+        let maxFoundChainLen = 0;
+        let horizontalChainLen = 0;
+        let verticalChainLen = 0;
+        let diagonal1ChainLen = 0;
+        let diagonal2ChainLen = 0;
+
+        for(let i = -(X-1); i <= X-1; i++) {
+
+            let x = lastMove.x - i;
+            let y = lastMove.y - i;
+            let yRev = lastMove.y + i;
+
+            if(GameUtil.isMoveInBoard({x, y: lastMove.y}) && boardState[x][lastMove.y] === player)
+                horizontalChainLen++;
+            else if(horizontalChainLen > maxFoundChainLen) {
+                maxFoundChainLen = horizontalChainLen;
+                horizontalChainLen = 0;
+            }
+
+            if(GameUtil.isMoveInBoard({x: lastMove.x, y}) && boardState[lastMove.x][y] === player)
+                verticalChainLen++;
+            else if(verticalChainLen > maxFoundChainLen) {
+                maxFoundChainLen = verticalChainLen;
+                verticalChainLen = 0;
+            }
+
+            if(GameUtil.isMoveInBoard({x, y}) && boardState[x][y] === player)
+                diagonal1ChainLen++;
+            else if(diagonal1ChainLen > maxFoundChainLen) {
+                maxFoundChainLen = diagonal1ChainLen;
+                diagonal1ChainLen = 0;
+            }
+
+            if(GameUtil.isMoveInBoard({x, y: yRev}) && boardState[x][yRev] === player)
+                diagonal2ChainLen++;
+            else if(diagonal2ChainLen > maxFoundChainLen) {
+                maxFoundChainLen = diagonal2ChainLen;
+                diagonal2ChainLen = 0;
+            }
+        }
+        boardState[lastMove.x][lastMove.y] = currentLastMove;
+        return maxFoundChainLen === X;
+    }
+
+    public static detectWin(boardState:Player[][], X:number, lastMove:Point, player:Player):boolean {
+        let currentLastMove = boardState[lastMove.x][lastMove.y];
+        boardState[lastMove.x][lastMove.y] = player;
+        let maxFoundChainLen = 0;
+        let horizontalChainLen = 0;
+        let verticalChainLen = 0;
+        let diagonal1ChainLen = 0;
+        let diagonal2ChainLen = 0;
+
+        for(let i = -(X); i <= X; i++) {
+
+            let x = lastMove.x - i;
+            let y = lastMove.y - i;
+            let yRev = lastMove.y + i;
+
+            if(GameUtil.isMoveInBoard({x, y: lastMove.y}) && boardState[x][lastMove.y] === player)
+                horizontalChainLen++;
+            else if(horizontalChainLen > maxFoundChainLen) {
+                maxFoundChainLen = horizontalChainLen;
+                horizontalChainLen = 0;
+            }
+
+            if(GameUtil.isMoveInBoard({x: lastMove.x, y}) && boardState[lastMove.x][y] === player)
+                verticalChainLen++;
+            else if(verticalChainLen > maxFoundChainLen) {
+                maxFoundChainLen = verticalChainLen;
+                verticalChainLen = 0;
+            }
+
+            if(GameUtil.isMoveInBoard({x, y}) && boardState[x][y] === player)
+                diagonal1ChainLen++;
+            else if(diagonal1ChainLen > maxFoundChainLen) {
+                maxFoundChainLen = diagonal1ChainLen;
+                diagonal1ChainLen = 0;
+            }
+
+            if(GameUtil.isMoveInBoard({x, y: yRev}) && boardState[x][yRev] === player)
+                diagonal2ChainLen++;
+            else if(diagonal2ChainLen > maxFoundChainLen) {
+                maxFoundChainLen = diagonal2ChainLen;
+                diagonal2ChainLen = 0;
+            }
+        }
+        boardState[lastMove.x][lastMove.y] = currentLastMove;
+        return maxFoundChainLen === X;
     }
 }
