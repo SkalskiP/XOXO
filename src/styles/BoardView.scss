@@ -18,6 +18,10 @@
 
     background-image: url("./assets/background.svg");
 
+    box-shadow: 
+        inset 0px 15px 8px -10px #000,
+        inset 0px -15px 8px -10px #000; 
+
     .MiddleRow {
         width: calc(100% - 20px);
         height: 100%;

@@ -23,7 +23,6 @@ export const gameReducer: Reducer<GameState> = (
         radiousOfSimulatedField: action.payload.radiousOfSimulatedField
       };
     case '@@game/UPDATE_BOARD_ANCHOR_POINT':
-      console.log(action.payload.boardAnchorPoint.toString())
       return {
         ...state,
         boardAnchorPoint: action.payload.boardAnchorPoint
@@ -35,13 +34,11 @@ export const gameReducer: Reducer<GameState> = (
         displayedBoardSizeInCells: action.payload.displayedBoardSizeInCells
       }
     case '@@game/UPDATE_ACTIVE_PLAYER':
-    console.log("Active palyer is: " + action.payload.activePlayer)
       return {
         ...state,
         activePlayer: action.payload.activePlayer
       };
     case '@@game/UPDATE_GAME_EVALUATION':
-      console.log("Game is over: " + action.payload.isGameOver)
       return {
         ...state,
         isGameOver: action.payload.isGameOver

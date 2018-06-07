@@ -60,11 +60,13 @@ export class BoardComponent extends React.Component<Props, {}> {
     protected livePlayerMakesMove = (event):void => {
         let positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
         let doesMoveSucceeded = this.makeMove(positionOnBoard);
-        let isGameOver = GameUtil.isWin(positionOnBoard, this.boardState, this.activePlayer)
-        this.props.onNewGameEvaluation(isGameOver);
-        if(!isGameOver) {
-            this.swichactivePlayer();
-            this.botPlayerMakesMove();
+        if(doesMoveSucceeded) {
+            let isGameOver = GameUtil.isWin(positionOnBoard, this.boardState, this.activePlayer)
+            this.props.onNewGameEvaluation(isGameOver);
+            if(!isGameOver) {
+                this.swichactivePlayer();
+                this.botPlayerMakesMove();
+            }
         }
     }
 
@@ -77,10 +79,12 @@ export class BoardComponent extends React.Component<Props, {}> {
         });
         let nextMove = GameUtil.getNextMove(this.boardState, this.props.numberOfSimulatedMoves, this.activePlayer === AppSettings.playerToMaximize, this.props.radiousOfSimulatedField); 
         let doesMoveSucceeded = this.makeMove(nextMove);
-        let isGameOver = GameUtil.isWin(nextMove, this.boardState, this.activePlayer)
-        this.props.onNewGameEvaluation(isGameOver);
-        if(!isGameOver) {
-            this.swichactivePlayer();
+        if(doesMoveSucceeded) {
+            let isGameOver = GameUtil.isWin(nextMove, this.boardState, this.activePlayer)
+            this.props.onNewGameEvaluation(isGameOver);
+            if(!isGameOver) {
+                this.swichactivePlayer();
+            }
         }
     }
 
@@ -133,7 +137,6 @@ export class BoardComponent extends React.Component<Props, {}> {
     }
 
     public render() {
-        console.log('GAME BOARD RENDER');
         return (
             <div className={"GameBoard"} ref = {ref => this.gameBoard = ref}>
                 <div className={"BoardWrapper"} ref = {ref => this.boardWrapper = ref} onClick={this.livePlayerMakesMove}>

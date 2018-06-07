@@ -80,7 +80,6 @@ export class BoardViewComponent extends React.Component<Props, {}> {
     }
 
     public render() {
-        console.log('BOARD VIEW RENDER');
         return (
             <div className={"BoardView"}>
                 <ImageButton 
