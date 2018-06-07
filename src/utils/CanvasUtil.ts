@@ -4,6 +4,7 @@ import { UnitUtil } from './UnitUtil';
 import { Rect } from './geometry/Rect';
 import { Player } from './Player';
 import { BoardUtil } from './BoardUtil';
+import { Size } from './geometry/Size';
 
 export class CanvasUtil {
 
@@ -52,13 +53,21 @@ export class CanvasUtil {
         ctx.restore();
     }
 
-    public static drawBoardState(canvas:HTMLCanvasElement, boardState:Player[][], cellSizePx:ISize, anchorPoint:IPoint) {
+    public static drawBoardState(canvas:HTMLCanvasElement, boardState:Player[][], displayedBoardSizeInCells:Size, fullBoardSizeInCells:Size, cellSizePx:ISize, anchorPoint:IPoint) {
         boardState.forEach((row:Player[], rowIndex) => {
             row.forEach((cell:Player, columnIndex) => {
                 let cellRect:Rect = BoardUtil.calculateCellRect({x: rowIndex, y: columnIndex}, cellSizePx, anchorPoint);
                 CanvasUtil.drawBoardCell(canvas, cellRect, cell);
             });
         });
+        if(anchorPoint.x === 0)
+            CanvasUtil.drawLine(canvas, {x: 0, y: 0}, {x: 0, y: displayedBoardSizeInCells.height * cellSizePx.height}, "#000", 6);
+        if(anchorPoint.x + displayedBoardSizeInCells.width === fullBoardSizeInCells.width)
+            CanvasUtil.drawLine(canvas, {x: displayedBoardSizeInCells.width * cellSizePx.height, y: 0}, {x: displayedBoardSizeInCells.width * cellSizePx.height, y: displayedBoardSizeInCells.height * cellSizePx.height}, "#000", 6);
+        if(anchorPoint.y === 0)
+            CanvasUtil.drawLine(canvas, {x: 0, y: 0}, {x: displayedBoardSizeInCells.width * cellSizePx.width, y: 0}, "#000", 6);
+        if(anchorPoint.y + displayedBoardSizeInCells.height === fullBoardSizeInCells.height)
+            CanvasUtil.drawLine(canvas, {x: 0, y: displayedBoardSizeInCells.height * cellSizePx.height}, {x: displayedBoardSizeInCells.width * cellSizePx.height, y: displayedBoardSizeInCells.height * cellSizePx.height}, "#000", 6);
     }
 
     public static drawBoardCell(canvas:HTMLCanvasElement, cellRect:Rect, player:Player) {

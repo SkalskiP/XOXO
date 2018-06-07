@@ -85,7 +85,7 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     }
 
     protected redrawBoard = ():void => {
-        CanvasUtil.drawBoardState(this.activeBoard, this.boardState, this.cellSizePx, this.props.boardAnchorPoint);
+        CanvasUtil.drawBoardState(this.activeBoard, this.boardState, this.props.displayedBoardSizeInCells, this.props.fullBoardSizeInCells, this.cellSizePx, this.props.boardAnchorPoint);
     }
 
     protected getPositionOnBoard(mousePosition:IPoint):IPoint {
@@ -124,6 +124,7 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     }
 
     public render() {
+        console.log('GAME BOARD RENDER');
         return (
             <div className={"GameBoard"} ref = {ref => this.gameBoard = ref}>
                 <div className={"BoardWrapper"} ref = {ref => this.boardWrapper = ref} onClick={this.livePlayerMakesMove}>

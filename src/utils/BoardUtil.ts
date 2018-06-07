@@ -36,11 +36,11 @@ export class BoardUtil {
         let boardHeightCells = canvas.height / cellSizePx.height;
 
         for(let i = 1; i < boardHeightCells; i++) {
-            CanvasUtil.drawLine(canvas, {x: 0, y: cellSizePx.height * i}, {x: canvas.width, y: cellSizePx.height * i});
+            CanvasUtil.drawLine(canvas, {x: 0, y: cellSizePx.height * i}, {x: canvas.width, y: cellSizePx.height * i}, "#000", 3);
         }
 
         for(let j = 1; j < boardWidthCells; j++) {
-            CanvasUtil.drawLine(canvas, {x: cellSizePx.width * j, y: 0}, {x: cellSizePx.width * j, y: canvas.height});
+            CanvasUtil.drawLine(canvas, {x: cellSizePx.width * j, y: 0}, {x: cellSizePx.width * j, y: canvas.height}, "#000", 3);
         }
     }
 

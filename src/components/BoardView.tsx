@@ -11,15 +11,16 @@ import { Dispatch, connect } from 'react-redux';
 import { updateBoardAnchorPoint } from '../store/game/actions';
 import { AppSettings } from '../settings/AppSettings';
 import { IPoint } from '../interfaces/IPoint';
+import { Size } from '../utils/geometry/Size';
 
 interface Props {
     boardAnchorPoint:Point;
+    fullBoardSizeInCells:Size;
+    displayedBoardSizeInCells:Size;
     onNewBoardAnchor: (newBoardAnchorPoint:Point) => any;
 }
 
 export class BoardViewComponent extends React.Component<Props, {}> {
-
-    protected fullBoardSizeCells = AppSettings.boardSizeCells;
 
     constructor(props: any) {
         super(props);
@@ -38,43 +39,48 @@ export class BoardViewComponent extends React.Component<Props, {}> {
             this.props.boardAnchorPoint.x + vector.x,
             this.props.boardAnchorPoint.y + vector.y
         );
-        this.props.onNewBoardAnchor(newAnchorPoint);
+
+        if(newAnchorPoint.x >= 0 && newAnchorPoint.y >= 0 && 
+            newAnchorPoint.x <= this.props.fullBoardSizeInCells.width - this.props.displayedBoardSizeInCells.width && 
+            newAnchorPoint.y <= this.props.fullBoardSizeInCells.height - this.props.displayedBoardSizeInCells.height)
+            this.props.onNewBoardAnchor(newAnchorPoint);
     }
 
     protected moveBoardUp = () => {
-        this.updateBoardAnchor({x: 0, y: 1})
-    }
-
-    protected moveBoardDown = () => {
         this.updateBoardAnchor({x: 0, y: -1})
     }
 
+    protected moveBoardDown = () => {
+        this.updateBoardAnchor({x: 0, y: 1})
+    }
+
     protected moveBoardLeft = () => {
-        this.updateBoardAnchor({x: 1, y: 0})
+        this.updateBoardAnchor({x: -1, y: 0})
     }
 
     protected moveBoardRight = () => {
-        this.updateBoardAnchor({x: -1, y: 0})
+        this.updateBoardAnchor({x: 1, y: 0})
     }
 
     protected keyboardNavigation = (event):void => {
         switch (event.keyCode) {
             case 37:
-                this.updateBoardAnchor({x: 1, y: 0});
-                break;
-            case 38:
-                this.updateBoardAnchor({x: 0, y: 1});
-                break;
-            case 39:
                 this.updateBoardAnchor({x: -1, y: 0});
                 break;
-            case 40:
+            case 38:
                 this.updateBoardAnchor({x: 0, y: -1});
+                break;
+            case 39:
+                this.updateBoardAnchor({x: 1, y: 0});
+                break;
+            case 40:
+                this.updateBoardAnchor({x: 0, y: 1});
                 break;
         }
     }
 
     public render() {
+        console.log('BOARD VIEW RENDER');
         return (
             <div className={"BoardView"}>
                 <ImageButton 
@@ -110,7 +116,9 @@ export class BoardViewComponent extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
-    boardAnchorPoint: state.game.boardAnchorPoint
+    boardAnchorPoint: state.game.boardAnchorPoint,
+    fullBoardSizeInCells: state.game.fullBoardSizeInCells,
+    displayedBoardSizeInCells: state.game.displayedBoardSizeInCells
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
