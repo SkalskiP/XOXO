@@ -18,7 +18,6 @@ export class GameUtil {
             return true;
         }
         return false;
-
     }
 
     public static isWin(lastMove:Point, boardState:Player[][], activePlayer:Player):boolean {
@@ -127,12 +126,6 @@ export class GameUtil {
         })
 
         moves = _.sortBy(moves, 'value');
-
-        moves.forEach((move, index) => {
-            console.log("i=" + index + ", value: " + move.value + ", point: " + move.position.toString());
-        })
-
-        console.log(moves);
 
         if(!isMaximizingPlayer)
             return moves.slice(-1)[0].position
@@ -260,7 +253,7 @@ export class GameUtil {
         let diagonal1ChainLen = 0;
         let diagonal2ChainLen = 0;
 
-        for(let i = -(X); i <= X; i++) {
+        for(let i = -X; i <= X; i++) {
 
             let x = lastMove.x - i;
             let y = lastMove.y - i;

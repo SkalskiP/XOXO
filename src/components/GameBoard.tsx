@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { AppSettings } from '../settings/AppSettings';
 import { Size } from '../utils/geometry/Size';
 import { BoardUtil } from '../utils/BoardUtil';
 import { CanvasUtil } from '../utils/CanvasUtil';
@@ -9,22 +8,23 @@ import { IPoint } from '../interfaces/IPoint';
 import { Rect } from '../utils/geometry/Rect';
 import { ApplicationState } from '../store/index';
 import { Dispatch, connect } from 'react-redux';
-import { updateBoardAnchorPoint,
-         setActivePlayer,
+import { setBoardDimensions,
+         updateActivePlayer,
          updateGameEvaluation } from '../store/game/actions';
 import { ISize } from '../interfaces/ISize';
 import { GameUtil } from '../logic/GameUtil';
-
-// https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
-// https://github.com/javierchavez/Gomoku/blob/master/Gomoku.java
-// https://4programmers.net/Forum/Java/221325-wprowadzenie_algorytmu_minimax_do_gomoku
-// https://paper.dropbox.com/doc/Program-Teoria-Gier-FxCZ4kxNLtdbrKZtqmO5C
-// http://gomokuworld.com/gomoku/1
+import { GameMode } from '../utils/GameMode';
+import { AppSettings } from '../settings/AppSettings';
 
 interface Props {
+    gameMode:GameMode;
+    fullBoardSizeInCells:Size;
     boardAnchorPoint:Point;
+    displayedBoardSizeInCells:Size;
+    numberOfSimulatedMoves:number;
+    radiousOfSimulatedField:number;
     onNewActivePlayer: (newActivePlayer:Player) => any;
-    onNewBoardAnchor: (newBoardAnchorPoint:Point) => any;
+    onBoardRecalculation: (newBoardAnchorPoint:Point, newDisplayedSizeInCells:Size) => any;
     onNewGameEvaluation: (newGameEvaluation:boolean) => any;
 }
 
@@ -35,16 +35,14 @@ export class GameBoardComponent extends React.Component<Props, {}> {
     protected activeBoard:HTMLCanvasElement;
     protected passiveBoard:HTMLCanvasElement;
     protected debugBoard:HTMLCanvasElement;
-
+    
     protected cellSizePx:Size = AppSettings.boardCellSizePx;
-    protected fullBoardSizeCells:Size = AppSettings.boardSizeCells;
     protected activePlayer:Player = Player.O;
     protected boardState:Player[][];
-    protected displayBoardSizeCells:Size;
 
 
     public componentDidMount() {
-        this.boardState = BoardUtil.initGameBoardState(this.fullBoardSizeCells);
+        this.boardState = BoardUtil.initGameBoardState(this.props.fullBoardSizeInCells);
         this.initGameBoard();
         window.addEventListener("resize", this.initGameBoard);
     }
@@ -72,7 +70,7 @@ export class GameBoardComponent extends React.Component<Props, {}> {
             let cellRect:Rect = BoardUtil.calculateCellRect(move, this.cellSizePx, this.props.boardAnchorPoint);
             CanvasUtil.fillRectWithColor(this.debugBoard, cellRect, AppSettings.possibleMoveRGBA);
         });
-        let nextMove = GameUtil.getNextMove(this.boardState, 3, this.activePlayer === AppSettings.playerToMaximize, AppSettings.minMaxPadding); 
+        let nextMove = GameUtil.getNextMove(this.boardState, this.props.numberOfSimulatedMoves, this.activePlayer === AppSettings.playerToMaximize, this.props.radiousOfSimulatedField); 
         this.makeMove(nextMove);
     }
 
@@ -110,8 +108,8 @@ export class GameBoardComponent extends React.Component<Props, {}> {
         const gameBoardRect = this.gameBoard.getBoundingClientRect();
         const calculatedBoardSizePx = BoardUtil.calculateDisplayBoardSizePx(
             {width: gameBoardRect.width, height: gameBoardRect.height},
-            this.fullBoardSizeCells, this.cellSizePx);
-        this.displayBoardSizeCells = new Size(
+            this.props.fullBoardSizeInCells, this.cellSizePx);
+        const displayedBoardSizeInCells:Size = new Size(
             calculatedBoardSizePx.width / this.cellSizePx.width,
             calculatedBoardSizePx.height / this.cellSizePx.height)
         this.boardWrapper.style.width = calculatedBoardSizePx.width + "px";
@@ -120,7 +118,9 @@ export class GameBoardComponent extends React.Component<Props, {}> {
         CanvasUtil.applySizeToCanvas(this.passiveBoard, calculatedBoardSizePx);
         CanvasUtil.applySizeToCanvas(this.debugBoard, calculatedBoardSizePx);
         BoardUtil.initGrid(this.passiveBoard, this.cellSizePx);
-        this.props.onNewBoardAnchor(BoardUtil.initGridAnchor(this.fullBoardSizeCells, this.displayBoardSizeCells));
+        this.props.onBoardRecalculation(
+            BoardUtil.initGridAnchor(this.props.fullBoardSizeInCells, displayedBoardSizeInCells), 
+            displayedBoardSizeInCells);
     }
 
     public render() {
@@ -137,12 +137,17 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
-    boardAnchorPoint: state.game.boardAnchorPoint
+    gameMode: state.game.gameMode,
+    fullBoardSizeInCells: state.game.fullBoardSizeInCells,
+    boardAnchorPoint: state.game.boardAnchorPoint,
+    displayedBoardSizeInCells: state.game.displayedBoardSizeInCells,
+    numberOfSimulatedMoves: state.game.numberOfSimulatedMoves,
+    radiousOfSimulatedField: state.game.radiousOfSimulatedField
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
-    onNewBoardAnchor: (newBoardAnchorPoint:Point) => dispatch(updateBoardAnchorPoint(newBoardAnchorPoint)),
-    onNewActivePlayer: (newActivePlayer:Player) => dispatch(setActivePlayer(newActivePlayer)),
+    onBoardRecalculation: (newBoardAnchorPoint:Point, newDisplayedSizeInCells) => dispatch(setBoardDimensions(newBoardAnchorPoint, newDisplayedSizeInCells)),
+    onNewActivePlayer: (newActivePlayer:Player) => dispatch(updateActivePlayer(newActivePlayer)),
     onNewGameEvaluation: (newGameEvaluation:boolean) => dispatch(updateGameEvaluation(newGameEvaluation))
 });
 

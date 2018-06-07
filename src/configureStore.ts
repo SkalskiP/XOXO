@@ -3,16 +3,21 @@ import { ApplicationState, rootReducer } from './store';
 import { GameState } from './store/game/types';
 import { GameMode } from './utils/GameMode';
 import { Player } from './utils/Player';
+import { AppSettings } from './settings/AppSettings';
 
 
 const initialApplicationState: ApplicationState = {
     game: {
         gameMode: GameMode.PLAYER_VS_PLAYER,
-        boardAnchorPoint: null,
-        activePlayer: Player.O,
-        isGameOver: false,
         playerOName: "Kółko",
-        playerXName: "Krzyżyk"
+        playerXName: "Krzyżyk",
+        fullBoardSizeInCells: AppSettings.boardSizeCells,
+        boardAnchorPoint: null,
+        displayedBoardSizeInCells: null,
+        numberOfSimulatedMoves: AppSettings.numberOfSimulatedMoves,
+        radiousOfSimulatedField: AppSettings.radiousOfSimulatedField,
+        activePlayer: Player.O,
+        isGameOver: false,        
     }
 };
 

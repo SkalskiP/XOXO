@@ -1,19 +1,28 @@
 import { ActionCreator } from 'redux';
 import {
-    SelectGameModeAction,
+    SetGameConfigurationAction,
     UpdateBoardAnchorPointAction,
-    SetActivePlayerAction,
-    UpdateGameEvaluationAction,
-    SetPlayersNamesAction
+    SetBoardDimensionsAction,
+    UpdateActivePlayerAction,
+    UpdateGameEvaluationAction
 } from './types';
 import { GameMode } from '../../utils/GameMode';
 import { Point } from '../../utils/geometry/Point';
 import { Player } from '../../utils/Player';
+import { Size } from '../../utils/geometry/Size';
 
-export const selectGameMode: ActionCreator<SelectGameModeAction> = (mode: GameMode) => ({
-    type: '@@game/SELECT_GAME_MODE',
+
+export const setGameConfiguration: ActionCreator<SetGameConfigurationAction> = (
+    selectedGameMode:GameMode, selectedPlayerXName:string, selectedPlayerOName:string, selectedBoardSizeInCells:Size,
+    selectedNumberOfSimulatedMoves:number, selectedRadiousOfSimulatedField:number) => ({
+    type: '@@game/SET_GAME_CONFIGURATION',
     payload: {
-        gameMode: mode
+        gameMode: selectedGameMode,
+        playerXName: selectedPlayerXName,
+        playerOName: selectedPlayerOName,
+        fullBoardSizeInCells: selectedBoardSizeInCells,
+        numberOfSimulatedMoves: selectedNumberOfSimulatedMoves,
+        radiousOfSimulatedField: selectedRadiousOfSimulatedField
     }
 });
 
@@ -24,8 +33,16 @@ export const updateBoardAnchorPoint: ActionCreator<UpdateBoardAnchorPointAction>
     }
 });
 
-export const setActivePlayer: ActionCreator<SetActivePlayerAction> = (newActivePlayer: Player) => ({
-    type: '@@game/SET_ACTIVE_PLAYER',
+export const setBoardDimensions: ActionCreator<SetBoardDimensionsAction> = (newAnchorPoint: Point, newDisplayedSizeInCells:Size) => ({
+    type: '@@game/SET_BOARD_DIMENSIONS',
+    payload: {
+        boardAnchorPoint: newAnchorPoint,
+        displayedBoardSizeInCells: newDisplayedSizeInCells
+    }
+});
+
+export const updateActivePlayer: ActionCreator<UpdateActivePlayerAction> = (newActivePlayer: Player) => ({
+    type: '@@game/UPDATE_ACTIVE_PLAYER',
     payload: {
         activePlayer: newActivePlayer
     }
@@ -35,13 +52,5 @@ export const updateGameEvaluation: ActionCreator<UpdateGameEvaluationAction> = (
     type: '@@game/UPDATE_GAME_EVALUATION',
     payload: {
         isGameOver: gameEvaluation
-    }
-});
-
-export const setPlayersNames: ActionCreator<SetPlayersNamesAction> = (playerX: string, playerO: string) => ({
-    type: '@@game/SET_PLAYERS_NAMES',
-    payload: {
-        playerOName: playerO,
-        playerXName: playerX
     }
 });

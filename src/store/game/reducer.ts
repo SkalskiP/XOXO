@@ -12,10 +12,15 @@ export const gameReducer: Reducer<GameState> = (
   action: GameActions
 ) => {
   switch (action.type) {
-    case '@@game/SELECT_GAME_MODE':
+    case '@@game/SET_GAME_CONFIGURATION':
       return {
         ...state,
-        gameMode: action.payload.gameMode
+        gameMode: action.payload.gameMode,
+        playerXName: action.payload.playerXName,
+        playerOName: action.payload.playerOName,
+        fullBoardSizeInCells: action.payload.fullBoardSizeInCells,
+        numberOfSimulatedMoves: action.payload.numberOfSimulatedMoves,
+        radiousOfSimulatedField: action.payload.radiousOfSimulatedField
       };
     case '@@game/UPDATE_BOARD_ANCHOR_POINT':
       console.log(action.payload.boardAnchorPoint.toString())
@@ -23,7 +28,13 @@ export const gameReducer: Reducer<GameState> = (
         ...state,
         boardAnchorPoint: action.payload.boardAnchorPoint
       };
-    case '@@game/SET_ACTIVE_PLAYER':
+    case '@@game/SET_BOARD_DIMENSIONS':
+      return {
+        ...state,
+        boardAnchorPoint: action.payload.boardAnchorPoint,
+        displayedBoardSizeInCells: action.payload.displayedBoardSizeInCells
+      }
+    case '@@game/UPDATE_ACTIVE_PLAYER':
     console.log("Active palyer is: " + action.payload.activePlayer)
       return {
         ...state,
@@ -35,12 +46,7 @@ export const gameReducer: Reducer<GameState> = (
         ...state,
         isGameOver: action.payload.isGameOver
       };
-    case '@@game/SET_PLAYERS_NAMES':
-      return {
-        ...state,
-        playerOName: action.payload.playerOName,
-        playerXName: action.payload.playerXName
-      };
+
     default:
       return state;
   }

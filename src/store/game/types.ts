@@ -2,21 +2,31 @@ import { Action } from 'redux';
 import { GameMode } from '../../utils/GameMode';
 import { Point } from '../../utils/geometry/Point';
 import { Player } from '../../utils/Player';
+import { Size } from '../../utils/geometry/Size';
 
 export interface GameState {
     gameMode:GameMode;
-    boardAnchorPoint:Point;
-    activePlayer:Player;
-    isGameOver:boolean;
     playerXName:string;
     playerOName:string;
+    fullBoardSizeInCells:Size;
+    boardAnchorPoint:Point;
+    displayedBoardSizeInCells:Size;
+    numberOfSimulatedMoves:number;
+    radiousOfSimulatedField:number;
+    activePlayer:Player;
+    isGameOver:boolean;
 }
 
-export interface SelectGameModeAction extends Action {
-    type: '@@game/SELECT_GAME_MODE';
+export interface SetGameConfigurationAction extends Action {
+    type: '@@game/SET_GAME_CONFIGURATION';
     payload: {
         gameMode:GameMode;
-    };
+        playerXName:string;
+        playerOName:string;
+        fullBoardSizeInCells:Size;
+        numberOfSimulatedMoves:number;
+        radiousOfSimulatedField:number;
+    }
 }
 
 export interface UpdateBoardAnchorPointAction extends Action {
@@ -26,8 +36,16 @@ export interface UpdateBoardAnchorPointAction extends Action {
     };
 }
 
-export interface SetActivePlayerAction extends Action {
-    type: '@@game/SET_ACTIVE_PLAYER';
+export interface SetBoardDimensionsAction extends Action {
+    type: '@@game/SET_BOARD_DIMENSIONS';
+    payload: {
+        boardAnchorPoint:Point;
+        displayedBoardSizeInCells:Size;
+    }
+}
+
+export interface UpdateActivePlayerAction extends Action {
+    type: '@@game/UPDATE_ACTIVE_PLAYER';
     payload: {
         activePlayer:Player;
     }
@@ -40,17 +58,9 @@ export interface UpdateGameEvaluationAction extends Action {
     };
 }
 
-export interface SetPlayersNamesAction extends Action {
-    type: '@@game/SET_PLAYERS_NAMES';
-    payload: {
-        playerXName:string;
-        playerOName:string;
-    };
-}
-
 export type GameActions = 
-    | SelectGameModeAction
+    | SetGameConfigurationAction
     | UpdateBoardAnchorPointAction
-    | SetActivePlayerAction
+    | SetBoardDimensionsAction
+    | UpdateActivePlayerAction
     | UpdateGameEvaluationAction
-    | SetPlayersNamesAction

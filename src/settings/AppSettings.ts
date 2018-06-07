@@ -13,7 +13,8 @@ export class AppSettings {
 
     // MINMAX
     public static playerToMaximize:Player = Player.O;
-    public static minMaxPadding:number = 1;
+    public static radiousOfSimulatedField:number = 1;
+    public static numberOfSimulatedMoves:number = 3;
 
     // VIEW
     public static activePlayerHex:string = "#14bdac";
