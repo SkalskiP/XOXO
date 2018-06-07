@@ -4,7 +4,7 @@ import TopArrow from './../assets/arrow_top.png';
 import BottomArrow from './../assets/arrow_bottom.png';
 import LeftArrow from './../assets/arrow_left.png';
 import RightArrow from './../assets/arrow_right.png';
-import { GameBoard } from './GameBoard';
+import { Board } from './Board';
 import { Point } from '../utils/geometry/Point';
 import { ApplicationState } from '../store/index';
 import { Dispatch, connect } from 'react-redux';
@@ -96,7 +96,7 @@ export class BoardViewComponent extends React.Component<Props, {}> {
                         size={{width: 60, height: 60}}
                         onClick={this.moveBoardLeft}
                     />
-                    <GameBoard/>
+                    <Board/>
                     <ImageButton 
                         image={RightArrow}
                         imageAlt={"Right Arrow"}

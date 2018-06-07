@@ -28,7 +28,7 @@ interface Props {
     onNewGameEvaluation: (newGameEvaluation:boolean) => any;
 }
 
-export class GameBoardComponent extends React.Component<Props, {}> {
+export class BoardComponent extends React.Component<Props, {}> {
 
     protected gameBoard:HTMLDivElement;
     protected boardWrapper:HTMLDivElement;
@@ -59,8 +59,13 @@ export class GameBoardComponent extends React.Component<Props, {}> {
 
     protected livePlayerMakesMove = (event):void => {
         let positionOnBoard:IPoint = this.getPositionOnBoard({x: event.clientX, y: event.clientY});
-        this.makeMove(positionOnBoard);
-        this.botPlayerMakesMove();
+        let doesMoveSucceeded = this.makeMove(positionOnBoard);
+        let isGameOver = GameUtil.isWin(positionOnBoard, this.boardState, this.activePlayer)
+        this.props.onNewGameEvaluation(isGameOver);
+        if(!isGameOver) {
+            this.swichactivePlayer();
+            this.botPlayerMakesMove();
+        }
     }
 
     protected botPlayerMakesMove():void {
@@ -71,17 +76,21 @@ export class GameBoardComponent extends React.Component<Props, {}> {
             CanvasUtil.fillRectWithColor(this.debugBoard, cellRect, AppSettings.possibleMoveRGBA);
         });
         let nextMove = GameUtil.getNextMove(this.boardState, this.props.numberOfSimulatedMoves, this.activePlayer === AppSettings.playerToMaximize, this.props.radiousOfSimulatedField); 
-        this.makeMove(nextMove);
+        let doesMoveSucceeded = this.makeMove(nextMove);
+        let isGameOver = GameUtil.isWin(nextMove, this.boardState, this.activePlayer)
+        this.props.onNewGameEvaluation(isGameOver);
+        if(!isGameOver) {
+            this.swichactivePlayer();
+        }
     }
 
-    protected makeMove(move:IPoint) {
+    protected makeMove(move:IPoint):boolean {
         let doesMoveSucceeded = GameUtil.makeMove(this.boardState, this.activePlayer, move);
         if (doesMoveSucceeded) {
             let activeCellRect:Rect = BoardUtil.calculateCellRect(move, this.cellSizePx, this.props.boardAnchorPoint);
             CanvasUtil.drawBoardCell(this.activeBoard, activeCellRect, this.activePlayer);
-            this.props.onNewGameEvaluation(GameUtil.isWin(move, this.boardState, this.activePlayer));
-            this.swichactivePlayer();
         }
+        return doesMoveSucceeded;
     }
 
     protected redrawBoard = ():void => {
@@ -152,7 +161,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
     onNewGameEvaluation: (newGameEvaluation:boolean) => dispatch(updateGameEvaluation(newGameEvaluation))
 });
 
-export const GameBoard = connect(mapStateToProps, mapDispatchToProps)(
-    GameBoardComponent
+export const Board = connect(mapStateToProps, mapDispatchToProps)(
+    BoardComponent
 );
 

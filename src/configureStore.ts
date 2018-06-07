@@ -9,8 +9,8 @@ import { AppSettings } from './settings/AppSettings';
 const initialApplicationState: ApplicationState = {
     game: {
         gameMode: GameMode.PLAYER_VS_PLAYER,
-        playerOName: "Kółko",
-        playerXName: "Krzyżyk",
+        playerOName: "PLAYER_O",
+        playerXName: "PLAYER_X",
         fullBoardSizeInCells: AppSettings.boardSizeCells,
         boardAnchorPoint: null,
         displayedBoardSizeInCells: null,
