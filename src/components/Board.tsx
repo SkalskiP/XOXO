@@ -17,6 +17,7 @@ import { GameMode } from '../utils/GameMode';
 import { AppSettings } from '../settings/AppSettings';
 
 interface Props {
+    isGameOver:boolean,
     gameMode:GameMode;
     fullBoardSizeInCells:Size;
     boardAnchorPoint:Point;
@@ -55,6 +56,17 @@ export class BoardComponent extends React.Component<Props, {}> {
         CanvasUtil.clearCanvas(this.activeBoard);
         CanvasUtil.clearCanvas(this.debugBoard);
         this.redrawBoard();
+    }
+
+    public componentWillReceiveProps(newProps:Props) {  
+        if(newProps.isGameOver === false && this.props.isGameOver === true) {
+            this.boardState = BoardUtil.initGameBoardState(this.props.fullBoardSizeInCells);
+            CanvasUtil.clearCanvas(this.activeBoard);
+            CanvasUtil.clearCanvas(this.debugBoard);
+            this.redrawBoard();
+            this.activePlayer = Player.O;
+            this.props.onNewActivePlayer(Player.O);
+        }   
     }
 
     protected livePlayerMakesMove = (event):void => {
@@ -150,6 +162,7 @@ export class BoardComponent extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
+    isGameOver: state.game.isGameOver,
     gameMode: state.game.gameMode,
     fullBoardSizeInCells: state.game.fullBoardSizeInCells,
     boardAnchorPoint: state.game.boardAnchorPoint,

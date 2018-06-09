@@ -1,0 +1,21 @@
+.SimpleButton {
+    transition: background-color 0.7s ease;
+    background-color: $simpleButtonBgColor;
+    color: $simpleButtonTextColor;
+    margin: 10px 10px 10px 10px;
+    font-size: 15px;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: space-around;
+    align-items: center;
+    user-select: none;
+}
+
+.SimpleButton:hover {
+    background-color: $simpleButtonHoverBgColor;
+    color: $simpleButtonHoverTextColor;
+    cursor: pointer;
+}

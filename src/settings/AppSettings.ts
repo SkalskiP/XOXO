@@ -9,7 +9,7 @@ export class AppSettings {
 
     // BOARD
     public static boardCellSizePx:Size = new Size(40, 40);
-    public static boardSizeCells:Size = new Size(15, 15); // (width, height)
+    public static boardSizeCells:Size = new Size(20, 20); // (width, height)
 
     // MINMAX
     public static playerToMaximize:Player = Player.O;
