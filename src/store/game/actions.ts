@@ -4,7 +4,8 @@ import {
     UpdateBoardAnchorPointAction,
     SetBoardDimensionsAction,
     UpdateActivePlayerAction,
-    UpdateGameEvaluationAction
+    UpdateGameEvaluationAction,
+    OpenSettingsWindowAction
 } from './types';
 import { GameMode } from '../../utils/GameMode';
 import { Point } from '../../utils/geometry/Point';
@@ -14,7 +15,7 @@ import { Size } from '../../utils/geometry/Size';
 
 export const setGameConfiguration: ActionCreator<SetGameConfigurationAction> = (
     selectedGameMode:GameMode, selectedPlayerXName:string, selectedPlayerOName:string, selectedBoardSizeInCells:Size,
-    selectedNumberOfSimulatedMoves:number, selectedRadiousOfSimulatedField:number) => ({
+    selectedNumberOfSimulatedMoves:number, selectedRadiousOfSimulatedField:number, selectedActivePlayer:Player) => ({
     type: '@@game/SET_GAME_CONFIGURATION',
     payload: {
         gameMode: selectedGameMode,
@@ -52,5 +53,12 @@ export const updateGameEvaluation: ActionCreator<UpdateGameEvaluationAction> = (
     type: '@@game/UPDATE_GAME_EVALUATION',
     payload: {
         isGameOver: gameEvaluation
+    }
+});
+
+export const openSettingsWindow: ActionCreator<OpenSettingsWindowAction> = (settingsWindowStatus: boolean) => ({
+    type: '@@game/OPEN_SETTINGS_WINDOW',
+    payload: {
+        isSettingsWindowOpened: settingsWindowStatus
     }
 });

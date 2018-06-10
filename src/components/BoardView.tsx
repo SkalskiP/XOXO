@@ -9,7 +9,6 @@ import { Point } from '../utils/geometry/Point';
 import { ApplicationState } from '../store/index';
 import { Dispatch, connect } from 'react-redux';
 import { updateBoardAnchorPoint } from '../store/game/actions';
-import { AppSettings } from '../settings/AppSettings';
 import { IPoint } from '../interfaces/IPoint';
 import { Size } from '../utils/geometry/Size';
 

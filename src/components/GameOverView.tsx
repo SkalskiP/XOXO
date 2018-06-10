@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { BoardView } from './BoardView';
 import { Player } from '../utils/Player';
 import { ApplicationState } from '../store/index';
 import { connect, Dispatch } from 'react-redux';

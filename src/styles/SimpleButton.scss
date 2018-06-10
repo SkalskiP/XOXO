@@ -1,9 +1,13 @@
 .SimpleButton {
     transition: background-color 0.7s ease;
-    background-color: $simpleButtonBgColor;
-    color: $simpleButtonTextColor;
     margin: 10px 10px 10px 10px;
     font-size: 15px;
+    background-color: #14bdac;
+    color: white;
+    padding: 3px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 
     display: flex;
     flex-direction: row;
@@ -12,10 +16,4 @@
     align-content: space-around;
     align-items: center;
     user-select: none;
-}
-
-.SimpleButton:hover {
-    background-color: $simpleButtonHoverBgColor;
-    color: $simpleButtonHoverTextColor;
-    cursor: pointer;
 }

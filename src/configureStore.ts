@@ -8,7 +8,7 @@ import { AppSettings } from './settings/AppSettings';
 
 const initialApplicationState: ApplicationState = {
     game: {
-        gameMode: GameMode.PLAYER_VS_PLAYER,
+        gameMode: GameMode.BOT_VS_PLAYER,
         playerOName: "PLAYER_O",
         playerXName: "PLAYER_X",
         fullBoardSizeInCells: AppSettings.boardSizeCells,
@@ -17,7 +17,8 @@ const initialApplicationState: ApplicationState = {
         numberOfSimulatedMoves: AppSettings.numberOfSimulatedMoves,
         radiousOfSimulatedField: AppSettings.radiousOfSimulatedField,
         activePlayer: Player.O,
-        isGameOver: false,        
+        isGameOver: false,
+        isSettingsWindowOpened: false        
     }
 };
 

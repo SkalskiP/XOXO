@@ -5,7 +5,6 @@ export class AppSettings {
 
     // GENERAL APP SETTINGS
     public static gitHubUrl:string = 'https://github.com/SkalskiP';
-    public static twitterUrl:string = 'https://twitter.com/PiotrSkalski92';
 
     // BOARD
     public static boardCellSizePx:Size = new Size(40, 40);

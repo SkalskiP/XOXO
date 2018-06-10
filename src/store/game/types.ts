@@ -15,6 +15,7 @@ export interface GameState {
     radiousOfSimulatedField:number;
     activePlayer:Player;
     isGameOver:boolean;
+    isSettingsWindowOpened:boolean;
 }
 
 export interface SetGameConfigurationAction extends Action {
@@ -58,9 +59,17 @@ export interface UpdateGameEvaluationAction extends Action {
     };
 }
 
+export interface OpenSettingsWindowAction extends Action {
+    type: '@@game/OPEN_SETTINGS_WINDOW';
+    payload: {
+        isSettingsWindowOpened:boolean;
+    }
+}
+
 export type GameActions = 
     | SetGameConfigurationAction
     | UpdateBoardAnchorPointAction
     | SetBoardDimensionsAction
     | UpdateActivePlayerAction
     | UpdateGameEvaluationAction
+    | OpenSettingsWindowAction

@@ -11,7 +11,6 @@ import { Dispatch, connect } from 'react-redux';
 import { setBoardDimensions,
          updateActivePlayer,
          updateGameEvaluation } from '../store/game/actions';
-import { ISize } from '../interfaces/ISize';
 import { GameUtil } from '../logic/GameUtil';
 import { GameMode } from '../utils/GameMode';
 import { AppSettings } from '../settings/AppSettings';
@@ -44,12 +43,12 @@ export class BoardComponent extends React.Component<Props, {}> {
 
     public componentDidMount() {
         this.boardState = BoardUtil.initGameBoardState(this.props.fullBoardSizeInCells);
-        this.initGameBoard();
-        window.addEventListener("resize", this.initGameBoard);
+        this.initGameBoard(this.props.fullBoardSizeInCells);
+        window.addEventListener("resize", this.initGameBoardOnResize);
     }
 
     public componentWillUnmount() {
-        window.removeEventListener("resize", this.initGameBoard);
+        window.removeEventListener("resize", this.initGameBoardOnResize);
     }
 
     public componentDidUpdate() {
@@ -59,14 +58,20 @@ export class BoardComponent extends React.Component<Props, {}> {
     }
 
     public componentWillReceiveProps(newProps:Props) {  
-        if(newProps.isGameOver === false && this.props.isGameOver === true) {
-            this.boardState = BoardUtil.initGameBoardState(this.props.fullBoardSizeInCells);
-            CanvasUtil.clearCanvas(this.activeBoard);
-            CanvasUtil.clearCanvas(this.debugBoard);
+        if((newProps.isGameOver === false && this.props.isGameOver === true)
+            || (newProps.gameMode !== this.props.gameMode)
+            || (newProps.fullBoardSizeInCells.width !== this.props.fullBoardSizeInCells.width)
+            || (newProps.fullBoardSizeInCells.height !== this.props.fullBoardSizeInCells.height)) {
+            this.boardState = BoardUtil.initGameBoardState(newProps.fullBoardSizeInCells);
+            this.initGameBoard(newProps.fullBoardSizeInCells);
             this.redrawBoard();
             this.activePlayer = Player.O;
             this.props.onNewActivePlayer(Player.O);
         }   
+    }
+
+    protected initGameBoardOnResize = () => {
+        this.initGameBoard(this.props.fullBoardSizeInCells);
     }
 
     protected livePlayerMakesMove = (event):void => {
@@ -77,14 +82,15 @@ export class BoardComponent extends React.Component<Props, {}> {
             this.props.onNewGameEvaluation(isGameOver);
             if(!isGameOver) {
                 this.swichactivePlayer();
-                this.botPlayerMakesMove();
+                if(this.props.gameMode !== GameMode.PLAYER_VS_PLAYER)  
+                    this.botPlayerMakesMove();
             }
         }
     }
 
     protected botPlayerMakesMove():void {
         CanvasUtil.clearCanvas(this.debugBoard);
-        let possibleMoves = GameUtil.getPossibleMoves(this.boardState, 1);
+        let possibleMoves = GameUtil.getPossibleMoves(this.boardState, this.props.radiousOfSimulatedField);
         possibleMoves.forEach((move:Point) => {
             let cellRect:Rect = BoardUtil.calculateCellRect(move, this.cellSizePx, this.props.boardAnchorPoint);
             CanvasUtil.fillRectWithColor(this.debugBoard, cellRect, AppSettings.possibleMoveRGBA);
@@ -96,6 +102,8 @@ export class BoardComponent extends React.Component<Props, {}> {
             this.props.onNewGameEvaluation(isGameOver);
             if(!isGameOver) {
                 this.swichactivePlayer();
+                if(this.props.gameMode === GameMode.BOT_VS_BOT)  
+                    this.botPlayerMakesMove();
             }
         }
     }
@@ -129,11 +137,11 @@ export class BoardComponent extends React.Component<Props, {}> {
         this.activePlayer = newPlayer;      
     }
 
-    protected initGameBoard = ():void => {
+    protected initGameBoard = (gameBoardSize:Size):void => {
         const gameBoardRect = this.gameBoard.getBoundingClientRect();
         const calculatedBoardSizePx = BoardUtil.calculateDisplayBoardSizePx(
             {width: gameBoardRect.width, height: gameBoardRect.height},
-            this.props.fullBoardSizeInCells, this.cellSizePx);
+            gameBoardSize, this.cellSizePx);
         const displayedBoardSizeInCells:Size = new Size(
             calculatedBoardSizePx.width / this.cellSizePx.width,
             calculatedBoardSizePx.height / this.cellSizePx.height)

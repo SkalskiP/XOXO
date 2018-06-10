@@ -6,9 +6,6 @@ import { Size } from '../utils/geometry/Size';
 import { Rect } from '../utils/geometry/Rect';
 import { IMinMaxMove } from '../interfaces/IMinMaxMove';
 import _ from 'underscore'
-import { ISize } from '../interfaces/ISize';
-import { BoardUtil } from '../utils/BoardUtil';
-import { UnitUtil } from '../utils/UnitUtil';
 
 export class GameUtil {
 
@@ -28,6 +25,7 @@ export class GameUtil {
         let verticalChainLen = 0;
         let diagonal1ChainLen = 0;
         let diagonal2ChainLen = 0;
+        let boardSize:Size = new Size(boardState.length, boardState[0].length);
 
         for(let i = -lenOfWinningChain; i <= lenOfWinningChain; i++) {
 
@@ -35,28 +33,28 @@ export class GameUtil {
             let y = lastMove.y - i;
             let yRev = lastMove.y + i;
 
-            if(GameUtil.isMoveInBoard({x, y: lastMove.y}) && boardState[x][lastMove.y] === activePlayer)
+            if(GameUtil.isMoveInBoard({x, y: lastMove.y}, boardSize) && boardState[x][lastMove.y] === activePlayer)
                 horizontalChainLen++;
             else if(horizontalChainLen > maxFoundChainLen) {
                 maxFoundChainLen = horizontalChainLen;
                 horizontalChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x: lastMove.x, y}) && boardState[lastMove.x][y] === activePlayer)
+            if(GameUtil.isMoveInBoard({x: lastMove.x, y}, boardSize) && boardState[lastMove.x][y] === activePlayer)
                 verticalChainLen++;
             else if(verticalChainLen > maxFoundChainLen) {
                 maxFoundChainLen = verticalChainLen;
                 verticalChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x, y}) && boardState[x][y] === activePlayer)
+            if(GameUtil.isMoveInBoard({x, y}, boardSize) && boardState[x][y] === activePlayer)
                 diagonal1ChainLen++;
             else if(diagonal1ChainLen > maxFoundChainLen) {
                 maxFoundChainLen = diagonal1ChainLen;
                 diagonal1ChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x, y: yRev}) && boardState[x][yRev] === activePlayer)
+            if(GameUtil.isMoveInBoard({x, y: yRev}, boardSize) && boardState[x][yRev] === activePlayer)
                 diagonal2ChainLen++;
             else if(diagonal2ChainLen > maxFoundChainLen) {
                 maxFoundChainLen = diagonal2ChainLen;
@@ -205,6 +203,7 @@ export class GameUtil {
         let verticalChainLen = 0;
         let diagonal1ChainLen = 0;
         let diagonal2ChainLen = 0;
+        let boardSize:Size = new Size(boardState.length, boardState[0].length);
 
         for(let i = -(X-1); i <= X-1; i++) {
 
@@ -212,28 +211,28 @@ export class GameUtil {
             let y = lastMove.y - i;
             let yRev = lastMove.y + i;
 
-            if(GameUtil.isMoveInBoard({x, y: lastMove.y}) && boardState[x][lastMove.y] === player)
+            if(GameUtil.isMoveInBoard({x, y: lastMove.y}, boardSize) && boardState[x][lastMove.y] === player)
                 horizontalChainLen++;
             else if(horizontalChainLen > maxFoundChainLen) {
                 maxFoundChainLen = horizontalChainLen;
                 horizontalChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x: lastMove.x, y}) && boardState[lastMove.x][y] === player)
+            if(GameUtil.isMoveInBoard({x: lastMove.x, y}, boardSize) && boardState[lastMove.x][y] === player)
                 verticalChainLen++;
             else if(verticalChainLen > maxFoundChainLen) {
                 maxFoundChainLen = verticalChainLen;
                 verticalChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x, y}) && boardState[x][y] === player)
+            if(GameUtil.isMoveInBoard({x, y}, boardSize) && boardState[x][y] === player)
                 diagonal1ChainLen++;
             else if(diagonal1ChainLen > maxFoundChainLen) {
                 maxFoundChainLen = diagonal1ChainLen;
                 diagonal1ChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x, y: yRev}) && boardState[x][yRev] === player)
+            if(GameUtil.isMoveInBoard({x, y: yRev}, boardSize) && boardState[x][yRev] === player)
                 diagonal2ChainLen++;
             else if(diagonal2ChainLen > maxFoundChainLen) {
                 maxFoundChainLen = diagonal2ChainLen;
@@ -252,6 +251,7 @@ export class GameUtil {
         let verticalChainLen = 0;
         let diagonal1ChainLen = 0;
         let diagonal2ChainLen = 0;
+        let boardSize:Size = new Size(boardState.length, boardState[0].length);
 
         for(let i = -X; i <= X; i++) {
 
@@ -259,28 +259,28 @@ export class GameUtil {
             let y = lastMove.y - i;
             let yRev = lastMove.y + i;
 
-            if(GameUtil.isMoveInBoard({x, y: lastMove.y}) && boardState[x][lastMove.y] === player)
+            if(GameUtil.isMoveInBoard({x, y: lastMove.y}, boardSize) && boardState[x][lastMove.y] === player)
                 horizontalChainLen++;
             else if(horizontalChainLen > maxFoundChainLen) {
                 maxFoundChainLen = horizontalChainLen;
                 horizontalChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x: lastMove.x, y}) && boardState[lastMove.x][y] === player)
+            if(GameUtil.isMoveInBoard({x: lastMove.x, y}, boardSize) && boardState[lastMove.x][y] === player)
                 verticalChainLen++;
             else if(verticalChainLen > maxFoundChainLen) {
                 maxFoundChainLen = verticalChainLen;
                 verticalChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x, y}) && boardState[x][y] === player)
+            if(GameUtil.isMoveInBoard({x, y}, boardSize) && boardState[x][y] === player)
                 diagonal1ChainLen++;
             else if(diagonal1ChainLen > maxFoundChainLen) {
                 maxFoundChainLen = diagonal1ChainLen;
                 diagonal1ChainLen = 0;
             }
 
-            if(GameUtil.isMoveInBoard({x, y: yRev}) && boardState[x][yRev] === player)
+            if(GameUtil.isMoveInBoard({x, y: yRev}, boardSize) && boardState[x][yRev] === player)
                 diagonal2ChainLen++;
             else if(diagonal2ChainLen > maxFoundChainLen) {
                 maxFoundChainLen = diagonal2ChainLen;

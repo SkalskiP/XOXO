@@ -4,8 +4,6 @@ import {
     GameState,
     GameActions
 } from './types';
-import { GameMode } from '../../utils/GameMode';
-import { Player } from '../../utils/Player';
 
 export const gameReducer: Reducer<GameState> = (
   state: GameState = null,
@@ -43,7 +41,12 @@ export const gameReducer: Reducer<GameState> = (
         ...state,
         isGameOver: action.payload.isGameOver
       };
-
+    case '@@game/OPEN_SETTINGS_WINDOW':
+    console.log("Is settings window open? : " + action.payload.isSettingsWindowOpened);
+      return {
+        ...state,
+        isSettingsWindowOpened: action.payload.isSettingsWindowOpened
+      }
     default:
       return state;
   }
