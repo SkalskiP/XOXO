@@ -17,6 +17,7 @@ const initialApplicationState: ApplicationState = {
         numberOfSimulatedMoves: AppSettings.numberOfSimulatedMoves,
         radiousOfSimulatedField: AppSettings.radiousOfSimulatedField,
         activePlayer: Player.O,
+        startPlayer: Player.O,
         isGameOver: false,
         isSettingsWindowOpened: false        
     }

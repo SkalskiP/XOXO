@@ -14,6 +14,7 @@ export interface GameState {
     numberOfSimulatedMoves:number;
     radiousOfSimulatedField:number;
     activePlayer:Player;
+    startPlayer:Player;
     isGameOver:boolean;
     isSettingsWindowOpened:boolean;
 }
@@ -27,6 +28,7 @@ export interface SetGameConfigurationAction extends Action {
         fullBoardSizeInCells:Size;
         numberOfSimulatedMoves:number;
         radiousOfSimulatedField:number;
+        startPlayer:Player;
     }
 }
 

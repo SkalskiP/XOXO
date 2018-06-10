@@ -18,7 +18,8 @@ export const gameReducer: Reducer<GameState> = (
         playerOName: action.payload.playerOName,
         fullBoardSizeInCells: action.payload.fullBoardSizeInCells,
         numberOfSimulatedMoves: action.payload.numberOfSimulatedMoves,
-        radiousOfSimulatedField: action.payload.radiousOfSimulatedField
+        radiousOfSimulatedField: action.payload.radiousOfSimulatedField,
+        startPlayer: action.payload.startPlayer
       };
     case '@@game/UPDATE_BOARD_ANCHOR_POINT':
       return {

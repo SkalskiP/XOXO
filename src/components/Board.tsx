@@ -23,6 +23,7 @@ interface Props {
     displayedBoardSizeInCells:Size;
     numberOfSimulatedMoves:number;
     radiousOfSimulatedField:number;
+    startPlayer:Player;
     onNewActivePlayer: (newActivePlayer:Player) => any;
     onBoardRecalculation: (newBoardAnchorPoint:Point, newDisplayedSizeInCells:Size) => any;
     onNewGameEvaluation: (newGameEvaluation:boolean) => any;
@@ -37,7 +38,7 @@ export class BoardComponent extends React.Component<Props, {}> {
     protected debugBoard:HTMLCanvasElement;
     
     protected cellSizePx:Size = AppSettings.boardCellSizePx;
-    protected activePlayer:Player = Player.O;
+    protected activePlayer:Player = this.props.startPlayer;
     protected boardState:Player[][];
 
 
@@ -60,14 +61,15 @@ export class BoardComponent extends React.Component<Props, {}> {
     public componentWillReceiveProps(newProps:Props) {  
         if((newProps.isGameOver === false && this.props.isGameOver === true)
             || (newProps.gameMode !== this.props.gameMode)
+            || (newProps.startPlayer !== this.props.startPlayer)
             || (newProps.fullBoardSizeInCells.width !== this.props.fullBoardSizeInCells.width)
             || (newProps.fullBoardSizeInCells.height !== this.props.fullBoardSizeInCells.height)) {
             this.boardState = BoardUtil.initGameBoardState(newProps.fullBoardSizeInCells);
             this.initGameBoard(newProps.fullBoardSizeInCells);
             this.redrawBoard();
-            this.activePlayer = Player.O;
-            this.props.onNewActivePlayer(Player.O);
-        }   
+            this.activePlayer = newProps.startPlayer;
+            this.props.onNewActivePlayer(newProps.startPlayer);
+        }
     }
 
     protected initGameBoardOnResize = () => {
@@ -170,6 +172,7 @@ export class BoardComponent extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
+    startPlayer: state.game.startPlayer,
     isGameOver: state.game.isGameOver,
     gameMode: state.game.gameMode,
     fullBoardSizeInCells: state.game.fullBoardSizeInCells,

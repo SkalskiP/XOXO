@@ -13,11 +13,11 @@ interface Props {
     gameMode:GameMode;
     fullBoardSizeInCells:Size;
     isSettingsWindowOpened:boolean;
-    activePlayer:Player;
+    startPlayer:Player;
     numberOfSimulatedMoves:number;
     radiousOfSimulatedField:number;
     saveNewGameSettings: (gameMode:GameMode, playerXName:string, playerOName:string, fullBoardSizeInCells:Size, 
-        numberOfSimulatedMoves:number, radiousOfSimulatedField:number) => any;
+        numberOfSimulatedMoves:number, radiousOfSimulatedField:number, activePlayer:Player) => any;
 }
 
 interface State {
@@ -27,6 +27,7 @@ interface State {
     numberOfSimulatedMoves:number;
     radiousOfSimulatedField:number;
     fullBoardSizeInCells:Size;
+    startPlayer:Player;
 }
 
 export class SettingsViewComponent extends React.Component<Props, State> {
@@ -39,13 +40,14 @@ export class SettingsViewComponent extends React.Component<Props, State> {
             gameMode: this.props.gameMode,
             numberOfSimulatedMoves: this.props.numberOfSimulatedMoves,
             radiousOfSimulatedField: this.props.radiousOfSimulatedField,
-            fullBoardSizeInCells: this.props.fullBoardSizeInCells
+            fullBoardSizeInCells: this.props.fullBoardSizeInCells,
+            startPlayer: this.props.startPlayer
         };
     }
 
     protected handleSubmit = (event) => {
         this.props.saveNewGameSettings(this.state.gameMode, this.state.playerXName, this.state.playerOName,
-        this.state.fullBoardSizeInCells, this.state.numberOfSimulatedMoves, this.state.radiousOfSimulatedField)
+        this.state.fullBoardSizeInCells, this.state.numberOfSimulatedMoves, this.state.radiousOfSimulatedField, this.state.startPlayer)
         event.preventDefault();
     }
 
@@ -67,6 +69,10 @@ export class SettingsViewComponent extends React.Component<Props, State> {
 
     protected handleRadiousOfSimulatedMovesChange = (event) => {
         this.setState({radiousOfSimulatedField: parseInt(event.target.value, 10)});
+    }
+
+    protected handleStartPlayerChange = (event) => {
+        this.setState({startPlayer: parseInt(event.target.value, 10)});
     }
 
     protected handleBoardWidthChange = (event) => {
@@ -107,6 +113,14 @@ export class SettingsViewComponent extends React.Component<Props, State> {
                             PLAYER X NAME
                         </label>
                         <input type="text" defaultValue={this.props.playerXName} name={"playerXName"} onChange={this.handlePlayerXNameChange}/>
+
+                        <label htmlFor={"playerToStart"}> 
+                            PLAYER STARTING THE GAME
+                        </label>
+                        <select defaultValue={this.props.startPlayer.toString()} name={"playerToStart"} onChange={this.handleStartPlayerChange}>
+                            <option value="1">X</option>
+                            <option value="-1">O</option>
+                        </select>
 
                         {/* <label htmlFor={"boardWidth"}> 
                             BOARD WIDTH
@@ -151,14 +165,15 @@ const mapStateToProps = (state: ApplicationState) => ({
     activePlayer: state.game.activePlayer,
     isSettingsWindowOpened: state.game.isSettingsWindowOpened,
     numberOfSimulatedMoves: state.game.numberOfSimulatedMoves,
-    radiousOfSimulatedField: state.game.radiousOfSimulatedField
+    radiousOfSimulatedField: state.game.radiousOfSimulatedField,
+    startPlayer: state.game.startPlayer
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationState>) => ({
     saveNewGameSettings: (gameMode:GameMode, playerXName:string, playerOName:string, fullBoardSizeInCells:Size, 
-        numberOfSimulatedMoves:number, radiousOfSimulatedField:number) => {
+        numberOfSimulatedMoves:number, radiousOfSimulatedField:number, startPlayer:Player) => {
             dispatch(setGameConfiguration(
-                gameMode, playerXName, playerOName, fullBoardSizeInCells, numberOfSimulatedMoves, radiousOfSimulatedField
+                gameMode, playerXName, playerOName, fullBoardSizeInCells, numberOfSimulatedMoves, radiousOfSimulatedField, startPlayer
             ));
             dispatch(openSettingsWindow(false));
         }

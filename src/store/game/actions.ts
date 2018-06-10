@@ -15,7 +15,7 @@ import { Size } from '../../utils/geometry/Size';
 
 export const setGameConfiguration: ActionCreator<SetGameConfigurationAction> = (
     selectedGameMode:GameMode, selectedPlayerXName:string, selectedPlayerOName:string, selectedBoardSizeInCells:Size,
-    selectedNumberOfSimulatedMoves:number, selectedRadiousOfSimulatedField:number, selectedActivePlayer:Player) => ({
+    selectedNumberOfSimulatedMoves:number, selectedRadiousOfSimulatedField:number, selectedStartPlayer:Player) => ({
     type: '@@game/SET_GAME_CONFIGURATION',
     payload: {
         gameMode: selectedGameMode,
@@ -23,7 +23,8 @@ export const setGameConfiguration: ActionCreator<SetGameConfigurationAction> = (
         playerOName: selectedPlayerOName,
         fullBoardSizeInCells: selectedBoardSizeInCells,
         numberOfSimulatedMoves: selectedNumberOfSimulatedMoves,
-        radiousOfSimulatedField: selectedRadiousOfSimulatedField
+        radiousOfSimulatedField: selectedRadiousOfSimulatedField,
+        startPlayer: selectedStartPlayer
     }
 });
 
